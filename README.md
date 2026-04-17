@@ -156,5 +156,3 @@ Then in Claude Code:
 ```
 /stitch typescript python image_processor 'resize images using Pillow' 'Pillow'
 ```
-
-Claude will read the template, fill it in, and write the files — but venv setup and path patching are handled by Claude rather than the MCP, so results may be less reliable.
