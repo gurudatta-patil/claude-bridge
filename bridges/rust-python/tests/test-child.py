@@ -1,5 +1,5 @@
 """
-Ghost-Bridge — test sidecar for the Rust test-runner.
+Stitch — test sidecar for the Rust test-runner.
 
 Methods
 -------

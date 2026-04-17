@@ -1,5 +1,5 @@
 """
-Ghost-Bridge: Python client for a Rust sidecar process.
+Stitch: Python client for a Rust sidecar process.
 
 Protocol:
   - Newline-delimited JSON over stdio

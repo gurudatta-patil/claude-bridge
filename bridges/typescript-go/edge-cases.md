@@ -8,7 +8,7 @@ pipeline and ensure the binary is committed or built as part of the project
 setup:
 
 ```sh
-go build -o .ghost-bridge/go/<bridge>/bridge ./path/to/sidecar
+go build -o .stitch/go/<bridge>/bridge ./path/to/sidecar
 ```
 
 The compiled binary is platform-specific.  Cross-compile for other targets

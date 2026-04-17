@@ -6,7 +6,7 @@ import { randomUUID } from "crypto";
 import { ensureGitignore, removeGitignoreBlock } from "../../src/gitignore.js";
 
 function tmpDir(): string {
-  const dir = path.join(os.tmpdir(), `ghost-bridge-test-${randomUUID()}`);
+  const dir = path.join(os.tmpdir(), `stitch-test-${randomUUID()}`);
   mkdirSync(dir, { recursive: true });
   return dir;
 }
@@ -22,9 +22,9 @@ describe("ensureGitignore", () => {
     const gi = path.join(dir, ".gitignore");
     expect(existsSync(gi)).toBe(true);
     const content = readFileSync(gi, "utf8");
-    expect(content).toContain(".ghost-bridge/");
-    expect(content).toContain("# ghost-bridge-start");
-    expect(content).toContain("# ghost-bridge-end");
+    expect(content).toContain(".stitch/");
+    expect(content).toContain("# stitch-start");
+    expect(content).toContain("# stitch-end");
   });
 
   test("appends to existing .gitignore without corrupting it", () => {
@@ -36,7 +36,7 @@ describe("ensureGitignore", () => {
     const content = readFileSync(gi, "utf8");
     expect(content).toContain("node_modules/");
     expect(content).toContain("dist/");
-    expect(content).toContain(".ghost-bridge/");
+    expect(content).toContain(".stitch/");
   });
 
   test("is idempotent — calling twice does not duplicate entries", () => {
@@ -44,7 +44,7 @@ describe("ensureGitignore", () => {
     ensureGitignore(dir);
 
     const content = readFileSync(path.join(dir, ".gitignore"), "utf8");
-    const startCount = (content.match(/# ghost-bridge-start/g) ?? []).length;
+    const startCount = (content.match(/# stitch-start/g) ?? []).length;
     expect(startCount).toBe(1);
   });
 
@@ -53,8 +53,8 @@ describe("ensureGitignore", () => {
     removeGitignoreBlock(dir);
 
     const content = readFileSync(path.join(dir, ".gitignore"), "utf8");
-    expect(content).not.toContain("# ghost-bridge-start");
-    expect(content).not.toContain(".ghost-bridge/");
+    expect(content).not.toContain("# stitch-start");
+    expect(content).not.toContain(".stitch/");
   });
 
   test("removeGitignoreBlock preserves pre-existing content", () => {

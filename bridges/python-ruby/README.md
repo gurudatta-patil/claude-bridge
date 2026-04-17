@@ -1,4 +1,4 @@
-# Ghost-Bridge — Python → Ruby
+# Stitch — Python → Ruby
 
 Seamless cross-language IPC: a Python process spawns a Ruby child and
 communicates with it over **newline-delimited JSON-RPC on stdio**.

@@ -1,4 +1,4 @@
-// Package main is the entry point for a Ghost-Bridge Go sidecar.
+// Package main is the entry point for a Stitch Go sidecar.
 //
 // Protocol
 // --------
@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"os"
 
-	sidecar "github.com/ghost-bridge/shared/go_sidecar"
+	sidecar "github.com/stitch/shared/go_sidecar"
 )
 
 // ---------------------------------------------------------------------------
@@ -97,9 +97,9 @@ func main() {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "ghost-bridge: stdin scanner error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "stitch: stdin scanner error: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Fprintln(os.Stderr, "ghost-bridge: stdin closed, exiting")
+	fmt.Fprintln(os.Stderr, "stitch: stdin closed, exiting")
 }

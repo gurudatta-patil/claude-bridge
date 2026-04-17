@@ -1,4 +1,4 @@
-# Ghost-Bridge — Shared Modules
+# Stitch — Shared Modules
 
 This directory contains extracted boilerplate that was previously duplicated across all 13 bridge-pair templates. Each module is the single source of truth for its language.
 
@@ -93,7 +93,7 @@ import { getVenvPython, getBinaryPath } from '../../shared/typescript/path-helpe
 
 ### Go client templates
 ```go
-import ghostbridge "github.com/ghost-bridge/shared/go"
+import ghostbridge "github.com/stitch/shared/go"
 ```
 
 ### Python client templates
@@ -126,16 +126,16 @@ run_sidecar(HANDLERS)
 
 ### Go sidecar templates
 ```go
-import sidecar "github.com/ghost-bridge/shared/go_sidecar"
+import sidecar "github.com/stitch/shared/go_sidecar"
 ```
 
 ### Rust sidecar templates
 ```toml
 # Cargo.toml
 [dependencies]
-ghost_bridge_sidecar = { path = "../../shared/rust_sidecar" }
+stitch_sidecar = { path = "../../shared/rust_sidecar" }
 ```
 ```rust
-use ghost_bridge_sidecar::run_sidecar;
+use stitch_sidecar::run_sidecar;
 run_sidecar(|method, params| { ... });
 ```

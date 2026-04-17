@@ -1,4 +1,4 @@
-//! Ghost-Bridge — shared Rust sidecar library.
+//! Stitch — shared Rust sidecar library.
 //!
 //! All Rust sidecars (typescript-rust, python-rust) use this crate instead
 //! of duplicating the BufWriter setup, ctrl-c handler, ready signal, and
@@ -9,13 +9,13 @@
 //! In your `Cargo.toml`:
 //! ```toml
 //! [dependencies]
-//! ghost_bridge_sidecar = { path = "../../shared/rust_sidecar" }
+//! stitch_sidecar = { path = "../../shared/rust_sidecar" }
 //! serde_json = "1"
 //! ```
 //!
 //! In your `main.rs`:
 //! ```rust,no_run
-//! use ghost_bridge_sidecar::run_sidecar;
+//! use stitch_sidecar::run_sidecar;
 //! use serde_json::Value;
 //!
 //! fn main() {

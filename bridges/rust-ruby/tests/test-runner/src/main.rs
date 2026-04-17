@@ -1,4 +1,4 @@
-//! Ghost-Bridge integration test runner.
+//! Stitch integration test runner.
 //!
 //! Spawns `tests/test-child.rb` via `ruby` and exercises each method.
 //! Run with:
@@ -167,8 +167,8 @@ macro_rules! fail {
 
 fn test_echo(b: &mut Bridge) {
     let name = "echo round-trip";
-    match b.call("echo", json!({ "value": "hello Ghost-Bridge" })) {
-        Ok(r) if r["value"] == "hello Ghost-Bridge" => pass!(name),
+    match b.call("echo", json!({ "value": "hello Stitch" })) {
+        Ok(r) if r["value"] == "hello Stitch" => pass!(name),
         Ok(r) => fail!(name, format!("unexpected result: {r}")),
         Err((c, m)) => fail!(name, format!("error {c}: {m}")),
     }
@@ -195,7 +195,7 @@ fn test_raise_error(b: &mut Bridge) {
 fn test_echo_b64(b: &mut Bridge) {
     use std::io::Write as _;
     let name = "echo_b64 base64 round-trip";
-    let input = "Ghost-Bridge rocks 🦀💎";
+    let input = "Stitch rocks 🦀💎";
     let encoded = {
         use std::fmt::Write as FW;
         // use base64 via Ruby to encode — here we just replicate it in Rust
@@ -318,7 +318,7 @@ fn base64_encode(input: &[u8]) -> String {
 
 fn main() {
     let sidecar = sidecar_path();
-    println!("Ghost-Bridge Rust→Ruby test runner");
+    println!("Stitch Rust→Ruby test runner");
     println!("sidecar: {sidecar}");
     println!();
 

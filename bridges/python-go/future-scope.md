@@ -139,7 +139,7 @@ development workflows without restarting the entire Python application.
 
 On Windows, anonymous pipes (used by `subprocess.PIPE`) are slower than named
 pipes for high-throughput scenarios.  A future `--transport named-pipe` flag
-could use `\\.\pipe\ghost-bridge-<pid>` for better throughput on Windows.
+could use `\\.\pipe\stitch-<pid>` for better throughput on Windows.
 
 ---
 

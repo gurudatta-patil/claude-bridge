@@ -1,4 +1,4 @@
-// template.sidecar.js — Node.js sidecar template for the Ghost-Bridge Go→Node.js bridge.
+// template.sidecar.js — Node.js sidecar template for the Stitch Go→Node.js bridge.
 //
 // Drop-in template: add your own method handlers inside the `handlers` object.
 // This file uses CommonJS (require) and works with Node 14+.

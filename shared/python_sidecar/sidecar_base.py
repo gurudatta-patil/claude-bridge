@@ -1,5 +1,5 @@
 """
-Ghost-Bridge — shared Python sidecar base.
+Stitch — shared Python sidecar base.
 
 All Python sidecars (typescript-python, go-python, rust-python) call
 `run_sidecar(handlers)` from this module rather than duplicating the
@@ -10,7 +10,7 @@ Import pattern in a sidecar template:
     _rpc_out = _sys.stdout
     _sys.stdout = _sys.stderr
     # ... then at the bottom:
-    from ghost_bridge_sidecar import run_sidecar
+    from stitch_sidecar import run_sidecar
     run_sidecar(HANDLERS)
 
 NOTE: The stdout redirect MUST happen before any other import, which is why

@@ -1,4 +1,4 @@
-//! Ghost-Bridge — Rust client template for the Python sidecar.
+//! Stitch — Rust client template for the Python sidecar.
 //!
 //! Replace every `TODO` comment with your own logic before shipping.
 //!

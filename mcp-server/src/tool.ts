@@ -1,64 +1,68 @@
 /**
- * tool.ts — MCP tool handler for `generate_ghost_bridge`.
+ * tool.ts — two MCP tool handlers for Stitch (scaffold-only design).
  *
- * Orchestration order:
- *   1. Resolve repo root (walks up from __filename looking for bridges/)
- *   2. Look up the language-pair descriptor (PairDef)
- *   3. Generate client + sidecar code via `claude --print`
- *   4. Copy shared helper modules into <projectRoot>/.ghost-bridge/shared/
- *   5. Patch import paths in generated files
- *   6. Write bridge files to .ghost-bridge/bridges/
- *   7. Write auxiliary sidecar files (go.mod, Cargo.toml) if any
- *   8. Set up sidecar runtime (venv / go build / cargo build / gem install)
- *   9. Inject .gitignore entries
+ * Workflow:
+ *   1. Claude Code calls get_stitch_templates(language_pair)
+ *      → receives raw template files + slot documentation
+ *   2. Claude Code fills in the slots in its own context (no subprocess)
+ *   3. Claude Code calls setup_stitch(..., client_code, sidecar_code)
+ *      → MCP writes files, patches paths, copies shared helpers, sets up runtime
  *
- * Copying shared modules into the project makes generated bridges fully
- * self-contained — they work regardless of where the project lives relative
- * to this repo.
+ * The MCP never calls `claude --print`. All code generation happens in
+ * Claude Code's main context where it has full project visibility.
  */
 
 import { mkdirSync, statSync, writeFileSync, readFileSync } from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { ensureGitignore } from "./gitignore.js";
-import { generateBridge } from "./generator.js";
+import { getTemplatesForPair } from "./generator.js";
 import { getPairDef } from "./language-pair.js";
 import type { PairDef } from "./language-pair.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
-export interface ToolParams {
+// ── Handler 1: get_stitch_templates ────────────────────────────────────
+
+export interface GetTemplatesParams {
+  language_pair: string;
+}
+
+export interface GetTemplatesResult {
+  clientTemplate: string;
+  sidecarTemplate: string;
+  clientSlots: string;
+  sidecarSlots: string;
+  clientFenceTag: string;
+  sidecarFenceTag: string;
+}
+
+export async function handleGetTemplates(
+  params: GetTemplatesParams,
+): Promise<GetTemplatesResult> {
+  const repoRoot = resolveRepoRoot();
+  return getTemplatesForPair(repoRoot, params.language_pair);
+}
+
+// ── Handler 2: setup_stitch ────────────────────────────────────────────
+
+export interface SetupParams {
   bridge_name: string;
-  target_capability: string;
-  dependencies: string[];
-  /** Which language pair to generate, e.g. "typescript-python". Defaults to "typescript-python". */
   language_pair?: string;
-  /** Project root where .ghost-bridge/ will be written. Defaults to cwd. */
+  /** Filled-in client source code (TypeScript, Python, Go, or Rust). */
+  client_code: string;
+  /** Filled-in sidecar source code (Python, Ruby, Go, Rust, or Node.js). */
+  sidecar_code: string;
+  dependencies: string[];
+  /** Project root where .stitch/ will be written. Defaults to cwd. */
   project_root?: string;
 }
 
-export interface ToolResult {
+export interface SetupResult {
   message: string;
   client_path: string;
   sidecar_path: string;
   runtime_info: string;
-}
-
-/** Absolute path to the ghost-bridge repo root (where bridges/ lives). */
-export function resolveRepoRoot(): string {
-  let dir = path.dirname(__filename);
-  for (let i = 0; i < 6; i++) {
-    const candidate = path.resolve(dir);
-    try {
-      statSync(path.join(candidate, "bridges"));
-      return candidate;
-    } catch {
-      dir = path.join(dir, "..");
-    }
-  }
-  throw new Error(
-    "Could not locate ghost-bridge repo root (bridges/ directory not found)",
-  );
 }
 
 /** Extension for each client language's primary output file. */
@@ -78,37 +82,28 @@ const SIDECAR_EXT: Record<string, string> = {
   rust: ".rs",
 };
 
-export async function handleGenerateGhostBridge(
-  params: ToolParams,
-): Promise<ToolResult> {
+export async function handleSetupStitch(
+  params: SetupParams,
+): Promise<SetupResult> {
   const repoRoot = resolveRepoRoot();
   const projectRoot = path.resolve(params.project_root ?? process.cwd());
   const languagePair = params.language_pair ?? "typescript-python";
-  const { bridge_name, target_capability, dependencies } = params;
+  const { bridge_name, client_code, sidecar_code, dependencies } = params;
 
   const def: PairDef = getPairDef(languagePair);
 
-  // 1. Generate code.
-  const { client, sidecar } = await generateBridge({
-    bridgeName: bridge_name,
-    targetCapability: target_capability,
-    dependencies,
-    languagePair,
-    repoRoot,
-  });
-
-  // 2. Copy shared modules for client + sidecar languages.
-  const bridgesDir = path.join(projectRoot, ".ghost-bridge", "bridges");
+  const bridgesDir = path.join(projectRoot, ".stitch", "bridges");
   mkdirSync(bridgesDir, { recursive: true });
 
+  // 1. Copy shared helpers for client + sidecar languages.
   def.setupClient(repoRoot, projectRoot, bridgesDir);
 
-  // 3. Patch import paths and write primary bridge files.
+  // 2. Patch import paths and write primary bridge files.
   const clientExt = CLIENT_EXT[def.clientLang] ?? ".txt";
   const sidecarExt = SIDECAR_EXT[def.sidecarLang] ?? ".txt";
 
   const clientPath = path.join(bridgesDir, `${bridge_name}${clientExt}`);
-  writeFileSync(clientPath, def.patchClient(client, bridge_name) + "\n", "utf8");
+  writeFileSync(clientPath, def.patchClient(client_code, bridge_name) + "\n", "utf8");
 
   // For compiled sidecars (Go, Rust) the sidecar files go in their own subdir.
   let sidecarPath: string;
@@ -120,7 +115,7 @@ export async function handleGenerateGhostBridge(
         : sidecarSubdir;
     mkdirSync(srcDir, { recursive: true });
     sidecarPath = path.join(srcDir, "main" + sidecarExt);
-    writeFileSync(sidecarPath, def.patchSidecar(sidecar, bridge_name) + "\n", "utf8");
+    writeFileSync(sidecarPath, def.patchSidecar(sidecar_code, bridge_name) + "\n", "utf8");
 
     // Write auxiliary files (go.mod / Cargo.toml).
     if (def.sidecarAuxTemplates) {
@@ -139,10 +134,10 @@ export async function handleGenerateGhostBridge(
     }
   } else {
     sidecarPath = path.join(bridgesDir, `${bridge_name}${sidecarExt}`);
-    writeFileSync(sidecarPath, def.patchSidecar(sidecar, bridge_name) + "\n", "utf8");
+    writeFileSync(sidecarPath, def.patchSidecar(sidecar_code, bridge_name) + "\n", "utf8");
   }
 
-  // 4. Set up sidecar runtime (venv / build / gem install).
+  // 3. Set up sidecar runtime (venv / build / gem install).
   const runtimeInfo = await def.setupSidecar(
     repoRoot,
     projectRoot,
@@ -151,13 +146,32 @@ export async function handleGenerateGhostBridge(
     dependencies,
   );
 
-  // 5. .gitignore
+  // 4. .gitignore
   ensureGitignore(projectRoot);
 
   return {
-    message: `Ghost-Bridge "${bridge_name}" (${languagePair}) created successfully.`,
+    message: `Stitch "${bridge_name}" (${languagePair}) scaffolded successfully.`,
     client_path: clientPath,
     sidecar_path: sidecarPath,
     runtime_info: runtimeInfo,
   };
+}
+
+// ── Shared helper ─────────────────────────────────────────────────────────────
+
+/** Walk up from __filename until we find a directory that contains bridges/. */
+export function resolveRepoRoot(): string {
+  let dir = path.dirname(__filename);
+  for (let i = 0; i < 6; i++) {
+    const candidate = path.resolve(dir);
+    try {
+      statSync(path.join(candidate, "bridges"));
+      return candidate;
+    } catch {
+      dir = path.join(dir, "..");
+    }
+  }
+  throw new Error(
+    "Could not locate stitch repo root (bridges/ directory not found)",
+  );
 }

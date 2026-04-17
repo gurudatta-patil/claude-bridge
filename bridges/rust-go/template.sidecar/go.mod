@@ -1,3 +1,3 @@
-module ghost-bridge-sidecar
+module stitch-sidecar
 
 go 1.21

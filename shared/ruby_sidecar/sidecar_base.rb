@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 #
-# Ghost-Bridge — shared Ruby sidecar base.
+# Stitch — shared Ruby sidecar base.
 #
 # All Ruby sidecars (typescript-ruby, go-ruby, python-ruby, rust-ruby) call
 # +run_sidecar(handlers)+ from this file rather than duplicating the sync

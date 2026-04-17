@@ -1,11 +1,11 @@
 {
-  "name": "ghost-bridge-mcp",
+  "name": "stitch-mcp",
   "version": "0.1.0",
-  "description": "MCP server for Ghost-Bridge: generate TypeScript ↔ Python bridge code via Claude Code",
+  "description": "MCP server for Stitch: generate TypeScript ↔ Python bridge code via Claude Code",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "ghost-bridge-mcp": "dist/index.js"
+    "stitch-mcp": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",

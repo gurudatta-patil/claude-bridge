@@ -1,3 +1,3 @@
-module github.com/ghost-bridge/typescript-go/test-child
+module github.com/stitch/typescript-go/test-child
 
 go 1.22

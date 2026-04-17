@@ -1,5 +1,5 @@
 """
-Ghost-Bridge: manual smoke-test client for test-child.rb.
+Stitch: manual smoke-test client for test-child.rb.
 
 Run directly::
 
@@ -221,7 +221,7 @@ def test_raise_error(bridge: RubyBridge) -> None:
 
 def test_echo_b64(bridge: RubyBridge) -> None:
     header("echo_b64")
-    data   = "Ghost-Bridge rocks"
+    data   = "Stitch rocks"
     result = bridge.call("echo_b64", {"data": data})
     expected = base64.b64encode(data.encode()).decode()
     assert result == expected, f"unexpected: {result!r}"

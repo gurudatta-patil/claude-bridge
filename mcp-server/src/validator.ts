@@ -1,5 +1,5 @@
 /**
- * validator.ts — post-generation sanity checks for Ghost-Bridge output.
+ * validator.ts — post-generation sanity checks for Stitch output.
  *
  * Rules check only what appears in the GENERATED portion of each template.
  * Shared base classes (sidecar_base.py, BridgeClientBase, etc.) handle the
@@ -30,8 +30,8 @@ export function validatePython(code: string): ValidationResult {
   if (/sys\.stdout\.write/.test(code))
     failures.push("Contains `sys.stdout.write` — use `_rpc_out.write` instead");
 
-  if (code.includes("# GHOST-BRIDGE-WARNING"))
-    failures.push("Contains GHOST-BRIDGE-WARNING — dependency requires a C++ compiler");
+  if (code.includes("# STITCH-WARNING"))
+    failures.push("Contains STITCH-WARNING — dependency requires a C++ compiler");
 
   return { ok: failures.length === 0, failures };
 }
@@ -43,7 +43,7 @@ export function validateTypeScript(code: string): ValidationResult {
 
   const hasClass =
     /class\s+\w+\s+(extends\s+BridgeClientBase|{)/.test(code) ||
-    code.includes("class GhostBridge") ||
+    code.includes("class Stitch") ||
     code.includes("class PythonBridge") ||
     code.includes("class RubyBridge") ||
     code.includes("class RustBridge") ||

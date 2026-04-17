@@ -1,4 +1,4 @@
-You are the Ghost-Bridge generator. The user wants to create an IPC bridge between two languages.
+You are the Stitch generator. The user wants to create an IPC bridge between two languages.
 
 ## Your job
 
@@ -22,13 +22,13 @@ You are the Ghost-Bridge generator. The user wants to create an IPC bridge betwe
    - The client file with fully-typed public methods matching the sidecar
 
 6. Set up the directory structure:
-   - Create `.ghost-bridge/bridges/<bridge_name>.<sidecar_ext>`
-   - Create `.ghost-bridge/bridges/<bridge_name>.<client_ext>`
+   - Create `.stitch/bridges/<bridge_name>.<sidecar_ext>`
+   - Create `.stitch/bridges/<bridge_name>.<client_ext>`
 
 7. For Python sidecars: run the venv + install steps:
    ```
-   python3 -m venv .ghost-bridge/.venv
-   .ghost-bridge/.venv/bin/pip install <dependencies>
+   python3 -m venv .stitch/.venv
+   .stitch/.venv/bin/pip install <dependencies>
    ```
    (Use `uv venv` + `uv pip install` if `uv` is available — check with `which uv`)
 
@@ -77,7 +77,7 @@ You are the Ghost-Bridge generator. The user wants to create an IPC bridge betwe
 - `Drop` impl to kill child
 - `call_timeout()` variant
 
-## Inject `.ghost-bridge/` into .gitignore
+## Inject `.stitch/` into .gitignore
 
-Check if `.ghost-bridge/.venv` is already in `.gitignore`. If not, append it.
+Check if `.stitch/.venv` is already in `.gitignore`. If not, append it.
 The generated `.py` and `.ts` bridge files should NOT be ignored — they're reviewable source.

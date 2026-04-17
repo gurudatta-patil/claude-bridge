@@ -1,4 +1,4 @@
-# Ghost-Bridge — TypeScript → Rust
+# Stitch — TypeScript → Rust
 
 Newline-delimited JSON-RPC over stdio between a TypeScript/Node.js parent and a
 compiled Rust binary sidecar.
@@ -21,10 +21,10 @@ compiled Rust binary sidecar.
 
 ```sh
 cp -r bridges/typescript-rust/template.sidecar \
-      .ghost-bridge/rust/my_bridge
+      .stitch/rust/my_bridge
 ```
 
-Edit `.ghost-bridge/rust/my_bridge/Cargo.toml` — replace every occurrence of
+Edit `.stitch/rust/my_bridge/Cargo.toml` — replace every occurrence of
 `bridge_name` with `my_bridge`.
 
 Add your methods in `src/main.rs` where the `[CLAUDE_*]` comments indicate.
@@ -32,7 +32,7 @@ Add your methods in `src/main.rs` where the `[CLAUDE_*]` comments indicate.
 ### 2. Build the Rust binary
 
 ```sh
-cd .ghost-bridge/rust/my_bridge
+cd .stitch/rust/my_bridge
 cargo build --release
 # Binary: target/release/my_bridge  (target/release/my_bridge.exe on Windows)
 ```
@@ -55,7 +55,7 @@ await client.stop();
 The client resolves the binary path automatically:
 
 ```
-<repo-root>/.ghost-bridge/rust/<bridge>/target/release/<bridge>[.exe]
+<repo-root>/.stitch/rust/<bridge>/target/release/<bridge>[.exe]
 ```
 
 ### 4. Run the integration tests

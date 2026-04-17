@@ -10,8 +10,8 @@ Ruby acts as a **target** (child process), receiving JSON-RPC requests via stdin
 |---------|------|
 | Isolation | Always run inside a Bundler-managed gemset or an rbenv gemset. Never `gem install` globally. |
 | Minimum version | Ruby 3.1 |
-| Package manager | `bundler` — generate a `Gemfile` inside `.ghost-bridge/ruby/<bridge_name>/` |
-| Executable path | `.ghost-bridge/ruby/<bridge_name>/vendor/bundle` or system rbenv path |
+| Package manager | `bundler` — generate a `Gemfile` inside `.stitch/ruby/<bridge_name>/` |
+| Executable path | `.stitch/ruby/<bridge_name>/vendor/bundle` or system rbenv path |
 
 ---
 

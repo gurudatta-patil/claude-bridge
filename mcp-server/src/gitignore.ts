@@ -1,17 +1,17 @@
 /**
- * gitignore.ts — inject Ghost-Bridge output paths into the project .gitignore.
+ * gitignore.ts — inject Stitch output paths into the project .gitignore.
  */
 
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import * as path from "path";
 
-const MARKER_START = "# ghost-bridge-start";
-const MARKER_END = "# ghost-bridge-end";
+const MARKER_START = "# stitch-start";
+const MARKER_END = "# stitch-end";
 
-const MANAGED_ENTRIES = [".ghost-bridge/", ".ghost-bridge/bridges/"];
+const MANAGED_ENTRIES = [".stitch/", ".stitch/bridges/"];
 
 /**
- * Ensure `.ghost-bridge/` paths are present in `<projectRoot>/.gitignore`.
+ * Ensure `.stitch/` paths are present in `<projectRoot>/.gitignore`.
  * Idempotent — calling it multiple times is safe.
  */
 export function ensureGitignore(projectRoot: string): void {
@@ -41,7 +41,7 @@ export function ensureGitignore(projectRoot: string): void {
 }
 
 /**
- * Remove the managed Ghost-Bridge block from `.gitignore`.
+ * Remove the managed Stitch block from `.gitignore`.
  * Used in tests to restore the file to its original state.
  */
 export function removeGitignoreBlock(projectRoot: string): void {

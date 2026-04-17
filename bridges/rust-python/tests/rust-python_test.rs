@@ -1,4 +1,4 @@
-//! Ghost-Bridge — Rust `#[cfg(test)]` integration tests for the Rust→Python bridge.
+//! Stitch — Rust `#[cfg(test)]` integration tests for the Rust→Python bridge.
 //!
 //! These tests run with `cargo test` from any crate that has the bridge source
 //! available.  They spawn `test-child.py` as the sidecar.

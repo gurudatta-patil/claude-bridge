@@ -1,4 +1,4 @@
-# Ghost-Bridge — Go → Node.js
+# Stitch — Go → Node.js
 
 Spawn a Node.js sidecar from Go and call any JavaScript/npm function as a simple
 blocking RPC call. Communication happens over newline-delimited JSON-RPC on
@@ -29,7 +29,7 @@ are routed back to the correct caller.
 ### 1. Add the dependency
 
 ```bash
-go get github.com/ghost-bridge/go-nodejs
+go get github.com/stitch/go-nodejs
 ```
 
 ### 2. Write (or copy) a sidecar
@@ -70,7 +70,7 @@ import (
     "fmt"
     "log"
 
-    gobridge "github.com/ghost-bridge/go-nodejs"
+    gobridge "github.com/stitch/go-nodejs"
 )
 
 func main() {
@@ -186,4 +186,4 @@ environments without Node do not fail the overall build.
 
 ## License
 
-Part of the Ghost-Bridge project. See the root `LICENSE` file.
+Part of the Stitch project. See the root `LICENSE` file.

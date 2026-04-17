@@ -1,9 +1,9 @@
 /**
- * Ghost-Bridge — TypeScript client for a compiled Go sidecar.
+ * Stitch — TypeScript client for a compiled Go sidecar.
  *
  * Spawn path convention:
- *   .ghost-bridge/go/<bridgeName>/bridge          (POSIX)
- *   .ghost-bridge/go/<bridgeName>/bridge.exe      (Windows)
+ *   .stitch/go/<bridgeName>/bridge          (POSIX)
+ *   .stitch/go/<bridgeName>/bridge.exe      (Windows)
  *
  * Usage:
  *   const client = new GoBridgeClient("my-bridge");
@@ -28,7 +28,7 @@ import { getBinaryPath } from "../../shared/typescript/path-helpers";
 /**
  * Returns the platform-aware path to the compiled Go binary.
  *
- * @param bridgeName  The subdirectory name under `.ghost-bridge/go/`.
+ * @param bridgeName  The subdirectory name under `.stitch/go/`.
  * @param projectRoot Optional project root; defaults to `process.cwd()`.
  */
 export function goBinaryPath(
@@ -36,7 +36,7 @@ export function goBinaryPath(
   projectRoot: string = process.cwd()
 ): string {
   return getBinaryPath(
-    `${projectRoot}/.ghost-bridge/go/${bridgeName}`,
+    `${projectRoot}/.stitch/go/${bridgeName}`,
     "",
     "bridge"
   );

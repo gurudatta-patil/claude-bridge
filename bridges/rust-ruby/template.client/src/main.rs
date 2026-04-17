@@ -1,4 +1,4 @@
-//! Ghost-Bridge — Rust client template for a Ruby sidecar.
+//! Stitch — Rust client template for a Ruby sidecar.
 //!
 //! Replace every `[CLAUDE_*]` placeholder before use:
 //!   [CLAUDE_SIDECAR_PATH]  — absolute or relative path to the .rb sidecar

@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	gobridge "github.com/ghost-bridge/go-nodejs"
+	gobridge "github.com/stitch/go-nodejs"
 )
 
 // childScript returns the absolute path to test-child.js relative to this file.

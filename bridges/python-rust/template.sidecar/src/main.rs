@@ -1,4 +1,4 @@
-// Ghost-Bridge — Rust sidecar template
+// Stitch — Rust sidecar template
 //
 // Replace every [CLAUDE_*] placeholder with your real implementation.
 //
@@ -13,7 +13,7 @@
 //  4. When stdin reaches EOF, exit cleanly.
 //  5. Use eprintln!() for all debug / log output.
 
-use ghost_bridge_sidecar::run_sidecar;
+use stitch_sidecar::run_sidecar;
 use serde_json::Value;
 
 // ---------------------------------------------------------------------------

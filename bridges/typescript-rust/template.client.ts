@@ -31,14 +31,14 @@ import { getBinaryPath } from "../../shared/typescript/path-helpers";
  * Resolve the absolute path to the compiled Rust binary for the given bridge.
  *
  * Convention:
- *   <repo-root>/.ghost-bridge/rust/<bridgeName>/target/release/<bridgeName>[.exe]
+ *   <repo-root>/.stitch/rust/<bridgeName>/target/release/<bridgeName>[.exe]
  */
 export function resolveBinaryPath(
   bridgeName: string,
   repoRoot: string = process.cwd()
 ): string {
   return getBinaryPath(
-    `${repoRoot}/.ghost-bridge/rust/${bridgeName}`,
+    `${repoRoot}/.stitch/rust/${bridgeName}`,
     "target/release",
     bridgeName
   );

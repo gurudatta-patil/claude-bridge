@@ -2,7 +2,7 @@
 name = "test-runner"
 version = "0.1.0"
 edition = "2021"
-description = "Ghost-Bridge integration test runner for the Rust→Ruby bridge"
+description = "Stitch integration test runner for the Rust→Ruby bridge"
 
 [[bin]]
 name = "test-runner"

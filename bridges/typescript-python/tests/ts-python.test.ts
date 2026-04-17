@@ -1,5 +1,5 @@
 /**
- * Ghost-Bridge – vitest integration tests for TypeScript → Python bridge.
+ * Stitch – vitest integration tests for TypeScript → Python bridge.
  *
  * Spawns tests/test-child.py via the real Python interpreter and exercises
  * every protocol path: happy-path, concurrency, error propagation, EOF

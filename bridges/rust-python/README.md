@@ -1,4 +1,4 @@
-# Ghost-Bridge — Rust → Python
+# Stitch — Rust → Python
 
 Seamless cross-language IPC between a Rust host process and a Python sidecar
 via newline-delimited JSON-RPC over stdio.
@@ -59,7 +59,7 @@ cargo run
 Expected output:
 
 ```
-=== Ghost-Bridge Rust→Python test-runner ===
+=== Stitch Rust→Python test-runner ===
 
 test_echo ... ok
 test_add ... ok

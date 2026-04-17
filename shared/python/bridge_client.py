@@ -1,5 +1,5 @@
 """
-Ghost-Bridge — shared Python bridge client base.
+Stitch — shared Python bridge client base.
 
 All Python bridge clients (python-ruby, python-rust, python-go) subclass
 BridgeClientBase rather than duplicating subprocess spawn, reader thread,

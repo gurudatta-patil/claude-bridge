@@ -1,4 +1,4 @@
-# Ghost-Bridge — Python → Go
+# Stitch — Python → Go
 
 A minimal, production-ready bridge that lets a **Python process** call methods
 implemented in a **compiled Go binary** over newline-delimited JSON-RPC on

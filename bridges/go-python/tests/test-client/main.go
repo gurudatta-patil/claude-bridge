@@ -1,4 +1,4 @@
-// main.go — Ghost-Bridge manual test client (Go → Python).
+// main.go — Stitch manual test client (Go → Python).
 //
 // Run from the tests/test-client directory:
 //

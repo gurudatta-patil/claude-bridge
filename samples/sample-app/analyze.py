@@ -2,7 +2,7 @@
 analyze.py — standalone Python text-analysis script.
 
 This works perfectly as a standalone script, but the goal is to
-call it from TypeScript via Ghost-Bridge.
+call it from TypeScript via Stitch.
 
 Run it directly to verify:
     python3 analyze.py data/sample.txt

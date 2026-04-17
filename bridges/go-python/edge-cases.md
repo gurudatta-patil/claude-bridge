@@ -1,7 +1,7 @@
 # Edge Cases — Go → Python Bridge
 
 This document captures Go-specific and Python-specific quirks that can trip
-up implementors of the Ghost-Bridge Go→Python pattern.
+up implementors of the Stitch Go→Python pattern.
 
 ---
 

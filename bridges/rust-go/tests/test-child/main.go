@@ -1,4 +1,4 @@
-// Ghost-Bridge test-child Go sidecar.
+// Stitch test-child Go sidecar.
 //
 // Implements a concrete set of JSON-RPC methods used by the integration tests:
 //

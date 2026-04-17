@@ -1,4 +1,4 @@
-use ghost_bridge_sidecar::run_sidecar;
+use stitch_sidecar::run_sidecar;
 use serde_json::Value;
 
 // [CLAUDE_IMPORT_HANDLERS] - import your handler modules here

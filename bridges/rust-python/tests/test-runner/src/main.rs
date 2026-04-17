@@ -1,4 +1,4 @@
-//! Ghost-Bridge test-runner — exercises all test-child.py methods.
+//! Stitch test-runner — exercises all test-child.py methods.
 //!
 //! Run:
 //!   SIDECAR_SCRIPT=../test-child.py cargo run
@@ -235,12 +235,12 @@ fn test_rpc_error() {
 fn test_echo_b64() {
     print!("test_echo_b64 ... ");
     let mut b = new_bridge();
-    let r = b.call("echo_b64", serde_json::json!({"data": "ghost-bridge"}))
+    let r = b.call("echo_b64", serde_json::json!({"data": "stitch"}))
               .expect("echo_b64 failed");
     let decoded = String::from_utf8(
         base64_decode(r["b64"].as_str().expect("no b64 field"))
     ).unwrap();
-    assert_eq!(decoded, "ghost-bridge");
+    assert_eq!(decoded, "stitch");
     b.close().unwrap();
     println!("ok");
 }
@@ -360,7 +360,7 @@ fn base64_decode(s: &str) -> Vec<u8> {
 // ---------------------------------------------------------------------------
 
 fn main() {
-    println!("=== Ghost-Bridge Rust→Python test-runner ===\n");
+    println!("=== Stitch Rust→Python test-runner ===\n");
 
     test_echo();
     test_add();

@@ -1,4 +1,4 @@
-# Ghost-Bridge: Python → Rust
+# Stitch: Python → Rust
 
 Spawn a compiled Rust binary as a child process and communicate with it over
 newline-delimited JSON-RPC on stdin/stdout.

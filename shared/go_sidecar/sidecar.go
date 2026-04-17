@@ -1,4 +1,4 @@
-// Package sidecar provides shared primitives for Ghost-Bridge Go sidecars.
+// Package sidecar provides shared primitives for Stitch Go sidecars.
 //
 // All Go sidecars (typescript-go, python-go, rust-go) import this package
 // instead of duplicating buffered writer, scanner, signal handler, and

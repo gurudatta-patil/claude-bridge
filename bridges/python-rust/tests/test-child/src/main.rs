@@ -1,4 +1,4 @@
-// Ghost-Bridge — test-child Rust sidecar
+// Stitch — test-child Rust sidecar
 //
 // Implements the following methods for the Python test suite:
 //

@@ -7,7 +7,7 @@ export interface EchoResult { message: string }
 export interface AddParams { a: number; b: number }
 export interface AddResult { sum: number }
 
-export class GhostBridge {
+export class Stitch {
   private child: ReturnType<typeof spawn> | null = null;
   private pending = new Map<string, { resolve: (v: unknown) => void; reject: (e: Error) => void }>();
   private buffer = "";

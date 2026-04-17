@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	sidecar "github.com/ghost-bridge/shared/go_sidecar"
+	sidecar "github.com/stitch/shared/go_sidecar"
 )
 
 // Request represents an incoming JSON-RPC request from the parent process.

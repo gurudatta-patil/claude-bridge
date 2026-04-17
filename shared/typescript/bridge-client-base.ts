@@ -1,5 +1,5 @@
 /**
- * Ghost-Bridge — shared TypeScript client base.
+ * Stitch — shared TypeScript client base.
  *
  * Exports the cross-platform kill helper, the pending-call map factory, and
  * the abstract BridgeClientBase class that all TS bridge clients extend.

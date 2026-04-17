@@ -1,7 +1,7 @@
 # Edge Cases — Rust → Go Bridge
 
 This document captures Rust-to-Go specific edge cases you must handle when
-operating Ghost-Bridge in production or when building on top of the templates.
+operating Stitch in production or when building on top of the templates.
 
 ---
 
@@ -74,7 +74,7 @@ cases:
 ## 4. JSON Serialisation Dominates Latency, Not Process Spawn
 
 Both Rust and Go have sub-millisecond startup times.  For a long-lived sidecar
-process (the Ghost-Bridge model), **amortised startup cost is zero**.
+process (the Stitch model), **amortised startup cost is zero**.
 
 Measured on a 2024 developer laptop:
 

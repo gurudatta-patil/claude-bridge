@@ -1,4 +1,4 @@
-//! Ghost-Bridge: Rust client for a Go sidecar process communicating over JSON-RPC / stdio.
+//! Stitch: Rust client for a Go sidecar process communicating over JSON-RPC / stdio.
 //!
 //! Protocol:
 //!   - Newline-delimited JSON (NDJSON)

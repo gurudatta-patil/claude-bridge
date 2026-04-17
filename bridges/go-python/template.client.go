@@ -1,4 +1,4 @@
-// template.client.go — Ghost-Bridge: Go (source) → Python (target) client template.
+// template.client.go — Stitch: Go (source) → Python (target) client template.
 //
 // Copy this file into your project and replace the three PLACEHOLDER sections:
 //   1. SIDECAR_SCRIPT  – path to the Python sidecar (absolute or relative to binary)
@@ -7,7 +7,7 @@
 //
 // Build requirements:
 //   go get github.com/google/uuid
-//   go get github.com/ghost-bridge/shared/go
+//   go get github.com/stitch/shared/go
 
 package main
 
@@ -23,7 +23,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/ghost-bridge/shared/go"
+	"github.com/stitch/shared/go"
 	"github.com/google/uuid"
 )
 

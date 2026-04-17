@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 #
-# Ghost-Bridge: Ruby sidecar template.
+# Stitch: Ruby sidecar template.
 #
 # Replace every [CLAUDE_*] placeholder with your own logic, then drop this
 # file next to your project and run it as the child process of a RubyBridge

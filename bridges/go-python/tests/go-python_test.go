@@ -1,4 +1,4 @@
-// go-python_test.go — Ghost-Bridge integration tests (Go → Python).
+// go-python_test.go — Stitch integration tests (Go → Python).
 //
 // Run from the tests/ directory:
 //

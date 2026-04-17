@@ -1,4 +1,4 @@
-# Ghost-Bridge: TypeScript → Python
+# Stitch: TypeScript → Python
 
 Spawn a Python sidecar from Node.js and call it as if it were a local async function. All communication goes over newline-delimited JSON-RPC on stdio — no HTTP server, no network port, no serialisation library required on either side.
 
@@ -108,4 +108,4 @@ The tests automatically detect `.venv/bin/python` (or `.venv/Scripts/python.exe`
 
 - [Edge cases specific to this bridge](./edge-cases.md)
 - [Future improvement ideas](./future-scope.md)
-- [Top-level Ghost-Bridge README](../../README.md)
+- [Top-level Stitch README](../../README.md)

@@ -1,5 +1,5 @@
 """
-Ghost-Bridge – TypeScript → Python sidecar template.
+Stitch – TypeScript → Python sidecar template.
 
 Slot markers (replaced by the code-generation layer):
   [CLAUDE_IMPORTS_HERE]          – third-party / stdlib imports

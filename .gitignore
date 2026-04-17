@@ -1,6 +1,6 @@
-# Ghost-Bridge runtime artifacts
-.ghost-bridge/.venv/
-.ghost-bridge/node_modules/
+# Stitch runtime artifacts
+.stitch/.venv/
+.stitch/node_modules/
 
 # Wiki / internal docs (local only)
 info/

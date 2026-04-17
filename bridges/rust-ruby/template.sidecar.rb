@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Ghost-Bridge — Ruby sidecar template
+# Stitch — Ruby sidecar template
 #
 # Replace every [CLAUDE_*] placeholder before deploying:
 #   [CLAUDE_METHOD_NAME]   — the JSON-RPC method this sidecar handles

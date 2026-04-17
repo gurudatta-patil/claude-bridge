@@ -1,5 +1,5 @@
 /**
- * Ghost-Bridge – TypeScript client template for a Python sidecar.
+ * Stitch – TypeScript client template for a Python sidecar.
  *
  * Slot markers (replaced by the code-generation layer):
  *   [CLAUDE_TYPE_DEFINITIONS_HERE]  – TypeScript interfaces / type aliases

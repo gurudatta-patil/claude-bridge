@@ -1,5 +1,5 @@
 /**
- * Ghost-Bridge — TypeScript → Ruby integration tests
+ * Stitch — TypeScript → Ruby integration tests
  * Run with: vitest run
  */
 
@@ -164,7 +164,7 @@ describe('TypeScript → Ruby bridge', () => {
   // ── Base64 round-trip ─────────────────────────────────────────────────────
 
   it('echo_b64 — ASCII string round-trips correctly', async () => {
-    const input = 'Ghost-Bridge rocks!';
+    const input = 'Stitch rocks!';
     const result = await bridge.call('echo_b64', { input }) as {
       encoded: string;
       decoded: string;

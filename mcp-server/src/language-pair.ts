@@ -1,9 +1,9 @@
 /**
- * language-pair.ts — per-pair configuration for all 13 Ghost-Bridge pairs.
+ * language-pair.ts — per-pair configuration for all 13 Stitch pairs.
  *
  * Each PairDef describes:
  *   - which template files to read for the client and sidecar
- *   - which shared helpers to copy into .ghost-bridge/shared/
+ *   - which shared helpers to copy into .stitch/shared/
  *   - how to patch import paths in generated code
  *   - how to set up the sidecar runtime (venv / cargo build / go build / gem)
  *   - which code-fence language tags Claude should output
@@ -87,7 +87,7 @@ export interface PairDef {
   /**
    * Auxiliary sidecar files (go.mod, Cargo.toml) to read and write alongside
    * the primary template. Each entry: [templateRelPath, outputRelPath].
-   * The output is relative to the per-bridge sidecar directory in .ghost-bridge.
+   * The output is relative to the per-bridge sidecar directory in .stitch.
    */
   sidecarAuxTemplates?: [string, string][];
   /** Slot marker documentation shown to Claude. */
@@ -167,7 +167,7 @@ function setupGoClient(repoRoot: string, sharedDir: string): void {
   // Write go.mod so Go toolchain can resolve the module.
   write(
     path.join(goSharedDir, "go.mod"),
-    "module github.com/ghost-bridge/shared/go\n\ngo 1.21\n",
+    "module github.com/stitch/shared/go\n\ngo 1.21\n",
   );
 }
 
@@ -243,15 +243,15 @@ async function setupGoSidecar(
   );
   write(
     path.join(goSidecarShared, "go.mod"),
-    "module github.com/ghost-bridge/shared/go_sidecar\n\ngo 1.21\n",
+    "module github.com/stitch/shared/go_sidecar\n\ngo 1.21\n",
   );
 
   const bridgeDir = path.join(bridgesDir, bridgeName + "_sidecar");
   const goModPath = path.join(bridgeDir, "go.mod");
   if (existsSync(goModPath)) {
     let goMod = readFileSync(goModPath, "utf8");
-    if (!goMod.includes("ghost-bridge/shared/go_sidecar")) {
-      goMod = goMod.trimEnd() + "\n\nrequire github.com/ghost-bridge/shared/go_sidecar v0.0.0\n\nreplace github.com/ghost-bridge/shared/go_sidecar => ../shared/go_sidecar\n";
+    if (!goMod.includes("stitch/shared/go_sidecar")) {
+      goMod = goMod.trimEnd() + "\n\nrequire github.com/stitch/shared/go_sidecar v0.0.0\n\nreplace github.com/stitch/shared/go_sidecar => ../shared/go_sidecar\n";
       writeFileSync(goModPath, goMod, "utf8");
     }
   }
@@ -284,15 +284,15 @@ async function setupRustSidecar(
   );
   write(
     path.join(sharedDir, "rust_sidecar", "Cargo.toml"),
-    `[package]\nname = "ghost_bridge_sidecar"\nversion = "0.1.0"\nedition = "2021"\n\n[dependencies]\nserde = { version = "1", features = ["derive"] }\nserde_json = "1"\n`,
+    `[package]\nname = "stitch_sidecar"\nversion = "0.1.0"\nedition = "2021"\n\n[dependencies]\nserde = { version = "1", features = ["derive"] }\nserde_json = "1"\n`,
   );
 
   const bridgeDir = path.join(bridgesDir, bridgeName + "_sidecar");
   const cargoPath = path.join(bridgeDir, "Cargo.toml");
   if (existsSync(cargoPath)) {
     let cargo = readFileSync(cargoPath, "utf8");
-    if (!cargo.includes("ghost_bridge_sidecar")) {
-      cargo = cargo.trimEnd() + "\nghost_bridge_sidecar = { path = \"../shared/rust_sidecar\" }\n";
+    if (!cargo.includes("stitch_sidecar")) {
+      cargo = cargo.trimEnd() + "\nstitch_sidecar = { path = \"../shared/rust_sidecar\" }\n";
       writeFileSync(cargoPath, cargo, "utf8");
     }
   }
@@ -319,7 +319,7 @@ export function patchPythonSidecarPath(code: string): string {
 /** Fix Python client import path for bridge_client. */
 export function patchPythonClientPath(code: string): string {
   // Insert sys.path adjustment before the first bridge_client import if not already present.
-  if (!code.includes("ghost-bridge/shared") && !code.includes("../shared")) return code;
+  if (!code.includes("stitch/shared") && !code.includes("../shared")) return code;
   return code.replace(
     /from\s+bridge_client\s+import/,
     "import sys as _sys_gb; import os as _os_gb\n_sys_gb.path.insert(0, _os_gb.path.join(_os_gb.path.dirname(__file__), '..', 'shared'))\nfrom bridge_client import",
@@ -479,12 +479,12 @@ function makePairDef(
     patchSidecar: opts.patchSidecar ?? ((c) => c),
     patchAux: opts.patchAux,
     async setupSidecar(repoRoot, projectRoot, bridgesDir, bridgeName, deps) {
-      const sharedDir = path.join(projectRoot, ".ghost-bridge", "shared");
+      const sharedDir = path.join(projectRoot, ".stitch", "shared");
       mkdirSync(sharedDir, { recursive: true });
       return SIDECAR_SETUP[sidecarLang](repoRoot, sharedDir, bridgesDir, bridgeName, deps);
     },
     setupClient(repoRoot, projectRoot, _bridgesDir) {
-      const sharedDir = path.join(projectRoot, ".ghost-bridge", "shared");
+      const sharedDir = path.join(projectRoot, ".stitch", "shared");
       mkdirSync(sharedDir, { recursive: true });
       if (clientLang === "typescript") setupTypeScriptClient(repoRoot, sharedDir);
       else if (clientLang === "python") setupPythonClient(repoRoot, sharedDir);

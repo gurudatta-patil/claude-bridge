@@ -49,11 +49,11 @@ describe("validatePython", () => {
     expect(r.failures.some((f) => f.includes("sys.stdout.write"))).toBe(true);
   });
 
-  test("GHOST-BRIDGE-WARNING detected", () => {
-    const bad = validPy + "\n# GHOST-BRIDGE-WARNING: some-pkg requires a C++ compiler.\n";
+  test("STITCH-WARNING detected", () => {
+    const bad = validPy + "\n# STITCH-WARNING: some-pkg requires a C++ compiler.\n";
     const r = validatePython(bad);
     expect(r.ok).toBe(false);
-    expect(r.failures.some((f) => f.includes("GHOST-BRIDGE-WARNING"))).toBe(true);
+    expect(r.failures.some((f) => f.includes("STITCH-WARNING"))).toBe(true);
   });
 
   test("multiple failures are all reported", () => {

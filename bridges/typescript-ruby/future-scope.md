@@ -32,7 +32,7 @@ export interface AddResult  { sum: number }
 
 - Parse `.rbs` files using the [`rbs` gem](https://github.com/ruby/rbs) CLI
   (`rbs parse`) to produce a JSON AST.
-- Walk the AST in a Ghost-Bridge code-gen script and emit TypeScript interfaces.
+- Walk the AST in a Stitch code-gen script and emit TypeScript interfaces.
 - Inject the interfaces into the client template so `call('add', params)` is
   fully typed end-to-end.
 
@@ -80,7 +80,7 @@ sidecar handlers.
 - Signal handling differences: JRuby signal traps work but `Thread#kill` 
   semantics differ slightly.
 
-**Ghost-Bridge support:** Add a `{ runtime: 'jruby' }` option to the client
+**Stitch support:** Add a `{ runtime: 'jruby' }` option to the client
 constructor that substitutes `jruby` for `ruby` in the spawn command.
 
 ---

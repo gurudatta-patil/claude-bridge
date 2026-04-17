@@ -1,7 +1,7 @@
 /**
- * Ghost-Bridge TypeScript client template — Ruby sidecar edition.
+ * Stitch TypeScript client template — Ruby sidecar edition.
  * Generated for bridge: [CLAUDE_BRIDGE_NAME]
- * Do NOT edit — regenerate via Ghost-Bridge CLI
+ * Do NOT edit — regenerate via Stitch CLI
  */
 
 import { spawn } from 'child_process';

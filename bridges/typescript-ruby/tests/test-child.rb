@@ -1,4 +1,4 @@
-# Ghost-Bridge — Ruby test sidecar
+# Stitch — Ruby test sidecar
 # Used by ts-ruby.test.ts to exercise the full JSON-RPC bridge.
 
 $stdout.sync = true

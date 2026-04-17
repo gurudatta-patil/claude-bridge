@@ -1,7 +1,7 @@
-# Ghost-Bridge · Face Detection App
+# Stitch · Face Detection App
 
 A TypeScript + Express web app that captures live camera frames and runs face
-detection via a Python sidecar — connected through Ghost-Bridge.
+detection via a Python sidecar — connected through Stitch.
 
 ```
 Browser (camera) → POST /api/analyze → Express server
@@ -22,10 +22,10 @@ npm install
 
 ---
 
-## Step 2 — Register the Ghost-Bridge MCP server (once, globally)
+## Step 2 — Register the Stitch MCP server (once, globally)
 
 ```bash
-claude mcp add ghost-bridge -- npx tsx /path/to/claude-bridge/mcp-server/src/index.ts
+claude mcp add stitch -- npx tsx /path/to/claude-bridge/mcp-server/src/index.ts
 ```
 
 Verify:
@@ -47,7 +47,7 @@ claude
 ## Step 4 — Paste this prompt into Claude Code
 
 ```
-Use the generate_ghost_bridge MCP tool to create a bridge with these details:
+Use the generate_stitch MCP tool to create a bridge with these details:
 
   bridge_name: face_detector
 
@@ -75,7 +75,7 @@ Use the generate_ghost_bridge MCP tool to create a bridge with these details:
   dependencies: ["opencv-python-headless", "numpy"]
 
 After generating the bridge, do NOT modify server.ts — it already imports
-.ghost-bridge/bridges/face_detector.js and calls analyzeFrame({ image_b64 }).
+.stitch/bridges/face_detector.js and calls analyzeFrame({ image_b64 }).
 ```
 
 ---
@@ -91,10 +91,10 @@ bounding boxes will appear around detected faces.
 
 ---
 
-## What Ghost-Bridge generates
+## What Stitch generates
 
 ```
-.ghost-bridge/
+.stitch/
   bridges/
     face_detector.py    ← Python sidecar (cv2 Haar cascade)
     face_detector.ts    ← TypeScript PythonBridge client class
@@ -114,7 +114,7 @@ process exits.
 
 ## Image transfer convention
 
-Ghost-Bridge passes binary data as base64 strings.  
+Stitch passes binary data as base64 strings.  
 The browser does:
 
 ```js
@@ -138,7 +138,7 @@ No temp files, no HTTP multipart — just a plain JSON field.
 
 ```
 analyze.ts (Express)
-  └─ new PythonBridge(".ghost-bridge/bridges/face_detector.py")
+  └─ new PythonBridge(".stitch/bridges/face_detector.py")
        └─ spawn python face_detector.py
             │  stdin   {"id":"1","method":"analyze_frame","params":{"image_b64":"..."}}
             │  stdout  {"id":"1","result":{"faces":[{"x":120,"y":80,"w":60,"h":60,"confidence":1.0}]}}

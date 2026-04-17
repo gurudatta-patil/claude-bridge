@@ -1,7 +1,7 @@
 # Ruby-Specific Edge Cases
 
 This document catalogues edge cases that are unique to the TypeScript → Ruby
-bridge and that do not apply to other Ghost-Bridge language pairs.
+bridge and that do not apply to other Stitch language pairs.
 
 ---
 
@@ -37,8 +37,8 @@ startup can take **50–300 ms** while Bundler resolves the gem graph. Strategie
   outside the project root.
 - For gems with C extensions, the first `require` triggers `.so` / `.bundle`
   loading — profile with `ruby -e "require 'bundler/setup'; require 'pg'"`.
-- Ghost-Bridge places each bridge's Gemfile under
-  `.ghost-bridge/ruby/<bridge>/Gemfile`. Ensure `BUNDLE_GEMFILE` is exported
+- Stitch places each bridge's Gemfile under
+  `.stitch/ruby/<bridge>/Gemfile`. Ensure `BUNDLE_GEMFILE` is exported
   before spawning, or pass it in the `env` option of `child_process.spawn`.
 
 ---

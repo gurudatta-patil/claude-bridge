@@ -1,10 +1,10 @@
-# Ghost-Bridge — Rust → Go
+# Stitch — Rust → Go
 
 A production-ready template and integration-test suite for running a **Go binary
 as a sidecar subprocess** driven by a **Rust client** over newline-delimited
 JSON-RPC on stdio.
 
-Part of the [Ghost-Bridge](../../README.md) cross-language IPC project.
+Part of the [Stitch](../../README.md) cross-language IPC project.
 
 ---
 

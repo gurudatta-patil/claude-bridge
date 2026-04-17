@@ -1,3 +1,3 @@
-module github.com/ghost-bridge/typescript-go/template-sidecar
+module github.com/stitch/typescript-go/template-sidecar
 
 go 1.22

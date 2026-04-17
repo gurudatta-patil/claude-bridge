@@ -1,5 +1,5 @@
 /**
- * Ghost-Bridge — TypeScript path resolution helpers.
+ * Stitch — TypeScript path resolution helpers.
  *
  * Provides canonical ways to find the Python venv executable and
  * locate a compiled binary for any language target (Go, Rust, …).
@@ -32,14 +32,14 @@ export function getVenvPython(bridgeRoot: string): string {
  *
  * Automatically appends `.exe` on Windows.
  *
- * @param bridgeRoot  Root of the bridge project (e.g. `.ghost-bridge/go/my-bridge`).
+ * @param bridgeRoot  Root of the bridge project (e.g. `.stitch/go/my-bridge`).
  * @param subdir      Subdirectory path relative to `bridgeRoot` (e.g. `"target/release"`).
  * @param name        Binary name without extension.
  *
  * @example
- *   getBinaryPath("/project/.ghost-bridge/rust/my-bridge", "target/release", "my-bridge")
- *   // → "/project/.ghost-bridge/rust/my-bridge/target/release/my-bridge"     (POSIX)
- *   // → "/project/.ghost-bridge/rust/my-bridge/target/release/my-bridge.exe" (Windows)
+ *   getBinaryPath("/project/.stitch/rust/my-bridge", "target/release", "my-bridge")
+ *   // → "/project/.stitch/rust/my-bridge/target/release/my-bridge"     (POSIX)
+ *   // → "/project/.stitch/rust/my-bridge/target/release/my-bridge.exe" (Windows)
  */
 export function getBinaryPath(
   bridgeRoot: string,

@@ -1,4 +1,4 @@
-//! Ghost-Bridge integration tests: Rust client ↔ Go sidecar.
+//! Stitch integration tests: Rust client ↔ Go sidecar.
 //!
 //! These tests require a pre-built `test-child` binary.  Build it first:
 //!

@@ -1,4 +1,4 @@
-# Ghost-Bridge — Go → Python
+# Stitch — Go → Python
 
 Seamless cross-language IPC: a Go parent process communicates with a Python
 child process over newline-delimited JSON-RPC on stdin/stdout.

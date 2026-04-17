@@ -1,7 +1,7 @@
 # Go → Ruby Bridge: Edge Cases
 
 This document catalogues Go→Ruby-specific pitfalls that are not covered by the
-generic Ghost-Bridge protocol specification.
+generic Stitch protocol specification.
 
 ---
 

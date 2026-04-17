@@ -1,5 +1,5 @@
 """
-test-child.py — Ghost-Bridge test sidecar for the Go → Python bridge.
+test-child.py — Stitch test sidecar for the Go → Python bridge.
 
 Methods exposed
 ---------------

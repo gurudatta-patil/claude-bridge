@@ -2,8 +2,8 @@
 name        = "go-bridge-client"
 version     = "0.1.0"
 edition     = "2021"
-description = "Ghost-Bridge template: Rust client that drives a Go sidecar over JSON-RPC / stdio"
-authors     = ["Ghost-Bridge contributors"]
+description = "Stitch template: Rust client that drives a Go sidecar over JSON-RPC / stdio"
+authors     = ["Stitch contributors"]
 license     = "MIT"
 
 [[bin]]

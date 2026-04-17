@@ -1,5 +1,5 @@
 """
-Ghost-Bridge: Python (client) → Ruby (sidecar) template.
+Stitch: Python (client) → Ruby (sidecar) template.
 
 Copy this file, point SIDECAR_CMD at your Ruby script, and use RubyBridge
 as a context manager or plain object.

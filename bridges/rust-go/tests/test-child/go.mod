@@ -1,3 +1,3 @@
-module ghost-bridge-test-child
+module stitch-test-child
 
 go 1.21

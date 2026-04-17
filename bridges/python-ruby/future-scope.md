@@ -136,7 +136,7 @@ detect a hung (but not dead) Ruby process before a real call times out:
 
 ## 10. Windows named-pipe transport
 
-Replace stdio with Windows named pipes (`\\.\pipe\ghost-bridge-<pid>`) for
+Replace stdio with Windows named pipes (`\\.\pipe\stitch-<pid>`) for
 better security isolation and compatibility with Windows services that
 redirect stdio.
 

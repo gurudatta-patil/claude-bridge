@@ -1,4 +1,4 @@
-module github.com/ghost-bridge/go-nodejs
+module github.com/stitch/go-nodejs
 
 go 1.21
 

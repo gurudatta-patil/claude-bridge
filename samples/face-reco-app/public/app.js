@@ -118,7 +118,7 @@
       const data = await res.json();
 
       if (data.stub) {
-        setStatus("⚠ Bridge not loaded — run Ghost-Bridge (see README)", "error");
+        setStatus("⚠ Bridge not loaded — run Stitch (see README)", "error");
         drawFaces([]);
         return;
       }

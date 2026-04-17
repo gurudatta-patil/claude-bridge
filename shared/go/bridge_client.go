@@ -1,4 +1,4 @@
-// Package ghostbridge provides shared primitives for Ghost-Bridge Go clients.
+// Package ghostbridge provides shared primitives for Stitch Go clients.
 //
 // All Go bridge clients (go-python, go-ruby, go-nodejs) import this package
 // instead of duplicating scanner, pending-map, kill, and ready-wait logic.

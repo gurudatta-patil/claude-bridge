@@ -1,6 +1,6 @@
 # Future Scope — Rust → Go Bridge
 
-Ideas and directions for evolving the Ghost-Bridge Rust-to-Go implementation
+Ideas and directions for evolving the Stitch Rust-to-Go implementation
 beyond its current JSON-RPC-over-stdio baseline.
 
 ---
@@ -53,9 +53,9 @@ before committing.
 
 ## 2. Compare with CGo as an Alternative
 
-Before choosing Ghost-Bridge, it is worth understanding where CGo fits:
+Before choosing Stitch, it is worth understanding where CGo fits:
 
-| Dimension | Ghost-Bridge (stdio) | CGo |
+| Dimension | Stitch (stdio) | CGo |
 |---|---|---|
 | Language boundary | Process boundary | In-process function call |
 | Overhead per call | ~0.2 ms (JSON + pipe) | ~100 ns (CGo call overhead) |
@@ -71,7 +71,7 @@ Before choosing Ghost-Bridge, it is worth understanding where CGo fits:
 - You need sub-millisecond call latency AND you can tolerate the crash coupling.
 - You have an existing C-compatible Go library (`export "C"` annotation).
 
-**When to prefer Ghost-Bridge:**
+**When to prefer Stitch:**
 - Crash isolation is a hard requirement.
 - You want independent deployability and upgrades of the sidecar.
 - You need to run the sidecar on a different machine or in a container.

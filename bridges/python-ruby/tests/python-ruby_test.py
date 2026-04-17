@@ -1,5 +1,5 @@
 """
-Ghost-Bridge Python→Ruby bridge — pytest / unittest test suite.
+Stitch Python→Ruby bridge — pytest / unittest test suite.
 
 Run with:
     pytest tests/python-ruby_test.py -v
@@ -243,7 +243,7 @@ class TestErrors(BridgeTestCase):
 
 class TestEchoB64(BridgeTestCase):
     def test_echo_b64_basic(self) -> None:
-        data     = "Ghost-Bridge"
+        data     = "Stitch"
         expected = base64.b64encode(data.encode()).decode()
         result   = self.bridge.call("echo_b64", {"data": data})
         self.assertEqual(result, expected)

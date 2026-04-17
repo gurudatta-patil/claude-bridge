@@ -1,5 +1,5 @@
 """
-Ghost-Bridge – test sidecar for TypeScript → Python bridge tests.
+Stitch – test sidecar for TypeScript → Python bridge tests.
 
 Implements:
   echo        – returns params unchanged

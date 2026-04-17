@@ -2,7 +2,7 @@
 name = "ruby-bridge-client"
 version = "0.1.0"
 edition = "2021"
-description = "Ghost-Bridge Rust client template for Ruby sidecar IPC"
+description = "Stitch Rust client template for Ruby sidecar IPC"
 
 [[bin]]
 name = "ruby-bridge-client"

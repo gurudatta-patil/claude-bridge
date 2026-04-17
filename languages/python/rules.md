@@ -8,7 +8,7 @@ Python is always the **target** (child process) in a bridge. It receives JSON-RP
 
 | Concern | Rule |
 |---------|------|
-| Isolation | Always run inside `.ghost-bridge/.venv`. Never use global `python`. |
+| Isolation | Always run inside `.stitch/.venv`. Never use global `python`. |
 | Executable | `bin/python` (POSIX) · `Scripts/python.exe` (Windows) |
 | Version | Minimum Python 3.9 (for `str | None` union shorthand) |
 | Installer | `uv pip install` if `uv` present, else `python -m pip install` |

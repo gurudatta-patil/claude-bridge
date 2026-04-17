@@ -1,4 +1,4 @@
-//! Ghost-Bridge test runner.
+//! Stitch test runner.
 //!
 //! This binary builds the test-child Go sidecar (if `go` is on PATH), then
 //! exercises every supported method and validates results.  It is intentionally
@@ -293,8 +293,8 @@ fn run_tests(bin: &str) {
     {
         let mut b = Bridge::spawn(bin);
 
-        // "Hello, Ghost-Bridge!" base64-encoded
-        let encoded = base64_encode(b"Hello, Ghost-Bridge!");
+        // "Hello, Stitch!" base64-encoded
+        let encoded = base64_encode(b"Hello, Stitch!");
         let r = b.call("echo_b64", json!({"data": encoded}));
         results.assert_ok("echo_b64/basic", r, json!({"data": encoded}));
 
@@ -450,7 +450,7 @@ fn main() {
             build_test_child().to_string_lossy().into_owned()
         });
 
-    println!("Ghost-Bridge Test Runner");
+    println!("Stitch Test Runner");
     println!("Using sidecar binary: {bin_path}");
 
     run_tests(&bin_path);

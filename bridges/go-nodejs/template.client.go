@@ -14,7 +14,7 @@ import (
 	"sync"
 	"syscall"
 
-	ghostbridge "github.com/ghost-bridge/shared/go"
+	ghostbridge "github.com/stitch/shared/go"
 	"github.com/google/uuid"
 )
 

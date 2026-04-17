@@ -1,4 +1,4 @@
-//! Ghost-Bridge — shared Rust bridge client module.
+//! Stitch — shared Rust bridge client module.
 //!
 //! All Rust bridge clients (rust-python, rust-go, rust-ruby) include this
 //! module (`mod bridge_client; use bridge_client::*;`) rather than duplicating

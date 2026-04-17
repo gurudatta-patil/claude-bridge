@@ -1,4 +1,4 @@
-# Ghost-Bridge — TypeScript → Go
+# Stitch — TypeScript → Go
 
 Spawn a compiled Go binary as a long-lived sidecar and communicate over
 newline-delimited JSON-RPC on stdin/stdout.  The Go binary starts in ~5 ms,
@@ -23,21 +23,21 @@ Every Go sidecar must be compiled before it can be spawned.  The TypeScript
 client expects the binary at:
 
 ```
-.ghost-bridge/go/<bridgeName>/bridge        # POSIX
-.ghost-bridge/go/<bridgeName>/bridge.exe    # Windows
+.stitch/go/<bridgeName>/bridge        # POSIX
+.stitch/go/<bridgeName>/bridge.exe    # Windows
 ```
 
 Example for a bridge called `my-bridge`:
 
 ```sh
-mkdir -p .ghost-bridge/go/my-bridge
-go build -o .ghost-bridge/go/my-bridge/bridge ./bridges/typescript-go/template.sidecar
+mkdir -p .stitch/go/my-bridge
+go build -o .stitch/go/my-bridge/bridge ./bridges/typescript-go/template.sidecar
 ```
 
 Disable CGo to produce a fully static binary:
 
 ```sh
-CGO_ENABLED=0 go build -o .ghost-bridge/go/my-bridge/bridge ./bridges/typescript-go/template.sidecar
+CGO_ENABLED=0 go build -o .stitch/go/my-bridge/bridge ./bridges/typescript-go/template.sidecar
 ```
 
 ---

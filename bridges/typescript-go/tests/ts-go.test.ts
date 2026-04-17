@@ -1,5 +1,5 @@
 /**
- * Ghost-Bridge — TypeScript → Go integration tests
+ * Stitch — TypeScript → Go integration tests
  *
  * Before running: ensure `go` is on PATH.
  * The suite compiles the test-child sidecar automatically via execSync.
@@ -93,10 +93,10 @@ describe("TypeScript → Go bridge", () => {
   });
 
   it("echo_b64: encodes to base64", async () => {
-    const result = (await client.call("echo_b64", { data: "ghost-bridge" })) as {
+    const result = (await client.call("echo_b64", { data: "stitch" })) as {
       encoded: string;
     };
-    expect(result.encoded).toBe(Buffer.from("ghost-bridge").toString("base64"));
+    expect(result.encoded).toBe(Buffer.from("stitch").toString("base64"));
   });
 
   it("echo_b64: handles unicode payload", async () => {

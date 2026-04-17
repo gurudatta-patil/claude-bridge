@@ -1,6 +1,6 @@
 # Go → Ruby Bridge
 
-Part of **Ghost-Bridge** — seamless cross-language IPC via JSON-RPC over stdio.
+Part of **Stitch** — seamless cross-language IPC via JSON-RPC over stdio.
 
 This bridge lets a Go application call methods implemented in Ruby through a
 lightweight subprocess protocol.  No HTTP server, no ports, no serialisation
@@ -189,4 +189,4 @@ and streaming responses.
 
 ## License
 
-Same as the parent Ghost-Bridge project.
+Same as the parent Stitch project.

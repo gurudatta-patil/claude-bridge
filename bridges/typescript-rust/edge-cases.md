@@ -67,7 +67,7 @@ architecture will not run on the other.  Options:
   `cargo build --release --target aarch64-apple-darwin` +
   `x86_64-apple-darwin` then `lipo -create`.
 
-The `.ghost-bridge/rust/<bridge>/target/release/` path must therefore be
+The `.stitch/rust/<bridge>/target/release/` path must therefore be
 treated as platform-specific and never committed to version control.
 
 ## 7. `serde_json` number types — `i64` vs `f64`

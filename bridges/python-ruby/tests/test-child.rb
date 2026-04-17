@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 #
-# Ghost-Bridge test child (Ruby sidecar).
+# Stitch test child (Ruby sidecar).
 # Spawned by tests/test-client.py.
 #
 # Methods

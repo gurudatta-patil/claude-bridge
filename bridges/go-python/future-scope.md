@@ -1,6 +1,6 @@
 # Future Scope — Go → Python Bridge
 
-Ideas and roadmap items for the Ghost-Bridge Go → Python transport.
+Ideas and roadmap items for the Stitch Go → Python transport.
 
 ---
 

@@ -1,5 +1,5 @@
 """
-template.sidecar.py — Ghost-Bridge: Python (target) sidecar template.
+template.sidecar.py — Stitch: Python (target) sidecar template.
 
 HOW TO USE
 ----------

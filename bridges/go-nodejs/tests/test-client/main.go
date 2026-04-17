@@ -9,7 +9,7 @@ import (
 	"os"
 	"sync"
 
-	gobridge "github.com/ghost-bridge/go-nodejs"
+	gobridge "github.com/stitch/go-nodejs"
 )
 
 func main() {

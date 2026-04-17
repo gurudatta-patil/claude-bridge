@@ -1,4 +1,4 @@
-//! Ghost-Bridge — Rust→Ruby bridge integration tests.
+//! Stitch — Rust→Ruby bridge integration tests.
 //!
 //! These are `#[cfg(test)]` tests intended to be run from the workspace root:
 //!
@@ -257,7 +257,7 @@ mod tests {
     /// base64 round-trip via `echo_b64`.
     #[test]
     fn test_echo_base64() {
-        let input = "Ghost-Bridge rocks 🦀💎";
+        let input = "Stitch rocks 🦀💎";
         // Rust std doesn't have base64 without a crate; encode manually.
         let encoded = base64_naive_encode(input.as_bytes());
         let mut b = new_bridge();

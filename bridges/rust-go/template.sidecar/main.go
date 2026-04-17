@@ -1,4 +1,4 @@
-// Ghost-Bridge Go sidecar template.
+// Stitch Go sidecar template.
 //
 // Protocol (newline-delimited JSON over stdio):
 //
@@ -17,7 +17,7 @@ import (
 	"fmt"
 	"os"
 
-	sidecar "github.com/ghost-bridge/shared/go_sidecar"
+	sidecar "github.com/stitch/shared/go_sidecar"
 )
 
 // ── Wire types ────────────────────────────────────────────────────────────────

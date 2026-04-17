@@ -1,4 +1,4 @@
-# Ghost-Bridge — Rust → Ruby
+# Stitch — Rust → Ruby
 
 Seamless cross-language IPC between a **Rust caller** and a **Ruby sidecar**
 over newline-delimited JSON-RPC 2.0 on stdio.

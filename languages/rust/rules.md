@@ -1,6 +1,6 @@
 # Language Rules — Rust (Sidecar / Target)
 
-Rust acts as a **target** (child process). It is compiled to a binary placed in `.ghost-bridge/rust/<bridge_name>/target/release/`.
+Rust acts as a **target** (child process). It is compiled to a binary placed in `.stitch/rust/<bridge_name>/target/release/`.
 
 ---
 
@@ -9,8 +9,8 @@ Rust acts as a **target** (child process). It is compiled to a binary placed in 
 | Concern | Rule |
 |---------|------|
 | Toolchain | `rustup`-managed, stable channel |
-| Build | `cargo build --release` inside `.ghost-bridge/rust/<bridge_name>/` |
-| Executable | `.ghost-bridge/rust/<bridge_name>/target/release/<bridge_name>` |
+| Build | `cargo build --release` inside `.stitch/rust/<bridge_name>/` |
+| Executable | `.stitch/rust/<bridge_name>/target/release/<bridge_name>` |
 | JSON | `serde_json` crate (add to `Cargo.toml`) |
 
 ---

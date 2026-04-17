@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Ghost-Bridge — test child sidecar (real implementation, no placeholders)
+# Stitch — test child sidecar (real implementation, no placeholders)
 #
 # Methods exposed:
 #   echo         { value: <any> }             → { value: <any> }

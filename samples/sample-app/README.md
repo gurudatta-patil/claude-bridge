@@ -1,6 +1,6 @@
-# Ghost-Bridge Sample — Text Analyser
+# Stitch Sample — Text Analyser
 
-A TypeScript app that calls a Python text-analysis library via Ghost-Bridge.
+A TypeScript app that calls a Python text-analysis library via Stitch.
 
 `analyze.py` already runs standalone in Python.  
 The goal: call it from TypeScript without rewriting anything.
@@ -27,7 +27,7 @@ Top words      : consciousness, brain, why, experience, information
 ## Step 2 — register the MCP server (once, globally)
 
 ```bash
-claude mcp add ghost-bridge -- npx tsx /Users/gurudattapatil/Documents/GitHub/claude-bridge/mcp-server/src/index.ts
+claude mcp add stitch -- npx tsx /Users/gurudattapatil/Documents/GitHub/claude-bridge/mcp-server/src/index.ts
 ```
 
 Verify it's registered:
@@ -58,7 +58,7 @@ claude
 ## Step 4 — paste this prompt into Claude Code
 
 ```
-Use the generate_ghost_bridge MCP tool to create a bridge with these details:
+Use the generate_stitch MCP tool to create a bridge with these details:
 
   bridge_name: text_analyzer
   target_capability: >
@@ -79,7 +79,7 @@ Use the generate_ghost_bridge MCP tool to create a bridge with these details:
   dependencies: []
 
 After generating the bridge, update analyze.ts to:
-  - import TextAnalyzerBridge from .ghost-bridge/bridges/text_analyzer
+  - import TextAnalyzerBridge from .stitch/bridges/text_analyzer
   - remove the placeholder console.log
   - uncomment the bridge usage block
 ```
@@ -107,10 +107,10 @@ Expected output:
 
 ---
 
-## What Ghost-Bridge generates
+## What Stitch generates
 
 ```
-.ghost-bridge/
+.stitch/
   bridges/
     text_analyzer.py    ← Python sidecar (stdin/stdout JSON-RPC)
     text_analyzer.ts    ← TypeScript client class

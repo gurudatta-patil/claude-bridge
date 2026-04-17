@@ -1,4 +1,4 @@
-# Ghost-Bridge: TypeScript → Ruby
+# Stitch: TypeScript → Ruby
 
 Call Ruby code from TypeScript (or any Node.js process) over a type-safe,
 newline-delimited JSON-RPC channel on stdin/stdout. No network sockets, no

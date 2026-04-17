@@ -1,10 +1,10 @@
 /**
- * Integration test: full tool pipeline with mocked code generator.
+ * Integration test: scaffold-only tool pipeline.
  *
- * - Mocks `generateBridge` (generator.ts) to return pre-baked fixture code.
+ * - Does NOT mock generateBridge (it no longer exists).
  * - Mocks `ensureVenv` + `installDeps` (venv.ts) to skip real venv creation.
- * - Calls `handleGenerateGhostBridge` with a real temp project dir.
- * - Verifies files are written, .gitignore is updated, result shape is correct.
+ * - Calls `handleSetupStitch` with pre-baked fixture code.
+ * - Verifies files are written, paths are patched, .gitignore is updated.
  * - Restores everything (temp dir deleted) in afterEach.
  */
 
@@ -26,11 +26,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURES = path.resolve(__dirname, "../fixtures");
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
-// Mock generateBridge so we never spawn `claude --print` in integration tests.
-
-vi.mock("../../src/generator.js", () => ({
-  generateBridge: vi.fn(),
-}));
 
 vi.mock("../../src/venv.js", () => ({
   ensureVenv: vi.fn(async () => undefined),
@@ -40,11 +35,10 @@ vi.mock("../../src/venv.js", () => ({
 
 // ── Import after mocks ────────────────────────────────────────────────────────
 
-const { handleGenerateGhostBridge } = await import("../../src/tool.js");
-const { generateBridge } = await import("../../src/generator.js");
+const { handleSetupStitch, handleGetTemplates } = await import("../../src/tool.js");
 const { ensureVenv, installDeps } = await import("../../src/venv.js");
 
-// ── Fixtures (read after imports) ────────────────────────────────────────────
+// ── Fixtures ──────────────────────────────────────────────────────────────────
 
 const VALID_PY = readFileSync(path.join(FIXTURES, "valid-python.py"), "utf8");
 const VALID_TS = readFileSync(path.join(FIXTURES, "valid-typescript.ts"), "utf8");
@@ -52,34 +46,29 @@ const VALID_TS = readFileSync(path.join(FIXTURES, "valid-typescript.ts"), "utf8"
 // ─────────────────────────────────────────────────────────────────────────────
 
 function tmpDir(): string {
-  const dir = path.join(os.tmpdir(), `ghost-bridge-intg-${randomUUID()}`);
+  const dir = path.join(os.tmpdir(), `stitch-intg-${randomUUID()}`);
   mkdirSync(dir, { recursive: true });
   return dir;
 }
 
-describe("handleGenerateGhostBridge (integration, mocked generator)", () => {
+describe("handleSetupStitch (integration)", () => {
   let dir: string;
 
   beforeEach(() => {
     dir = tmpDir();
     vi.clearAllMocks();
-    // Re-apply mock return value after clearAllMocks.
-    // New shape: { client, sidecar } (was { python, typescript }).
-    (generateBridge as ReturnType<typeof vi.fn>).mockResolvedValue({
-      client: VALID_TS,
-      sidecar: VALID_PY,
-      rawResponse: "",
-    });
   });
 
   afterEach(() => {
     rmSync(dir, { recursive: true, force: true });
   });
 
-  test("writes TypeScript and Python files to .ghost-bridge/bridges/", async () => {
-    const result = await handleGenerateGhostBridge({
+  test("writes TypeScript client and Python sidecar files", async () => {
+    const result = await handleSetupStitch({
       bridge_name: "test_bridge",
-      target_capability: "echo and add two numbers",
+      language_pair: "typescript-python",
+      client_code: VALID_TS,
+      sidecar_code: VALID_PY,
       dependencies: [],
       project_root: dir,
     });
@@ -90,48 +79,97 @@ describe("handleGenerateGhostBridge (integration, mocked generator)", () => {
     expect(existsSync(result.sidecar_path)).toBe(true);
   });
 
-  test("written Python sidecar contains valid bridge code", async () => {
-    const result = await handleGenerateGhostBridge({
-      bridge_name: "echo_bridge",
-      target_capability: "echo params",
+  test("Python sidecar path is patched to ../shared", async () => {
+    // Inline code that has the repo-style path (what Claude might generate).
+    const sidecarWithRepoPath = [
+      "import sys as _sys",
+      "_rpc_out = _sys.stdout",
+      "_sys.stdout = _sys.stderr",
+      "HANDLERS = {}",
+      "import sys as _sys2",
+      "import os as _os",
+      "_sys2.path.insert(0, _os.path.join(_os.path.dirname(__file__), '..', '..', 'shared', 'python_sidecar'))",
+      "from sidecar_base import run_sidecar, set_rpc_out",
+      "set_rpc_out(_rpc_out)",
+      "if __name__ == '__main__': run_sidecar(HANDLERS)",
+    ].join("\n");
+
+    const result = await handleSetupStitch({
+      bridge_name: "path_bridge",
+      language_pair: "typescript-python",
+      client_code: VALID_TS,
+      sidecar_code: sidecarWithRepoPath,
       dependencies: [],
       project_root: dir,
     });
 
     const py = readFileSync(result.sidecar_path, "utf8");
-    expect(py).toContain("_rpc_out = _sys.stdout");
+    expect(py).toContain("'..', 'shared'");
+    expect(py).not.toContain("python_sidecar");
   });
 
-  test("written TypeScript client contains valid bridge code", async () => {
-    const result = await handleGenerateGhostBridge({
-      bridge_name: "echo_bridge",
-      target_capability: "echo params",
+  test("TypeScript client import path is patched to ../shared", async () => {
+    // Inline code with the old repo-style import path.
+    const clientWithRepoPath = [
+      'import { spawn } from "child_process";',
+      'import { BridgeClientBase, RpcRequest, killChild } from "../../shared/typescript/bridge-client-base";',
+      'export class Stitch extends BridgeClientBase {',
+      '  destroy() { killChild(null as never); }',
+      '  protected _writeRequest(r: RpcRequest, id: string, reject: (e: Error) => void) {}',
+      '}',
+    ].join("\n");
+
+    const result = await handleSetupStitch({
+      bridge_name: "ts_path_bridge",
+      language_pair: "typescript-python",
+      client_code: clientWithRepoPath,
+      sidecar_code: VALID_PY,
       dependencies: [],
       project_root: dir,
     });
 
     const ts = readFileSync(result.client_path, "utf8");
-    expect(ts).toContain("class GhostBridge");
+    expect(ts).toContain('../shared/bridge-client-base"');
+    expect(ts).not.toContain("shared/typescript/");
   });
 
-  test("updates .gitignore with ghost-bridge block", async () => {
-    await handleGenerateGhostBridge({
+  test("shared helpers are copied into .stitch/shared/", async () => {
+    await handleSetupStitch({
+      bridge_name: "shared_bridge",
+      language_pair: "typescript-python",
+      client_code: VALID_TS,
+      sidecar_code: VALID_PY,
+      dependencies: [],
+      project_root: dir,
+    });
+
+    const sharedDir = path.join(dir, ".stitch", "shared");
+    expect(existsSync(path.join(sharedDir, "bridge-client-base.ts"))).toBe(true);
+    expect(existsSync(path.join(sharedDir, "path-helpers.ts"))).toBe(true);
+    expect(existsSync(path.join(sharedDir, "sidecar_base.py"))).toBe(true);
+  });
+
+  test("updates .gitignore with stitch block", async () => {
+    await handleSetupStitch({
       bridge_name: "gi_bridge",
-      target_capability: "test gitignore",
+      language_pair: "typescript-python",
+      client_code: VALID_TS,
+      sidecar_code: VALID_PY,
       dependencies: [],
       project_root: dir,
     });
 
     const gi = readFileSync(path.join(dir, ".gitignore"), "utf8");
-    expect(gi).toContain("# ghost-bridge-start");
-    expect(gi).toContain(".ghost-bridge/");
-    expect(gi).toContain("# ghost-bridge-end");
+    expect(gi).toContain("# stitch-start");
+    expect(gi).toContain(".stitch/");
   });
 
-  test("calls ensureVenv and installDeps for typescript-python pair", async () => {
-    await handleGenerateGhostBridge({
+  test("calls ensureVenv and installDeps", async () => {
+    await handleSetupStitch({
       bridge_name: "venv_bridge",
-      target_capability: "uses numpy",
+      language_pair: "typescript-python",
+      client_code: VALID_TS,
+      sidecar_code: VALID_PY,
       dependencies: ["numpy"],
       project_root: dir,
     });
@@ -140,10 +178,27 @@ describe("handleGenerateGhostBridge (integration, mocked generator)", () => {
     expect(installDeps).toHaveBeenCalledWith(expect.any(String), ["numpy"]);
   });
 
+  test("venv is placed at .stitch/bridges/.venv", async () => {
+    await handleSetupStitch({
+      bridge_name: "venv_check",
+      language_pair: "typescript-python",
+      client_code: VALID_TS,
+      sidecar_code: VALID_PY,
+      dependencies: [],
+      project_root: dir,
+    });
+
+    expect(ensureVenv).toHaveBeenCalledWith(
+      expect.stringContaining(path.join(".stitch", "bridges", ".venv")),
+    );
+  });
+
   test("result message contains bridge name and pair", async () => {
-    const result = await handleGenerateGhostBridge({
+    const result = await handleSetupStitch({
       bridge_name: "my_bridge",
-      target_capability: "test",
+      language_pair: "typescript-python",
+      client_code: VALID_TS,
+      sidecar_code: VALID_PY,
       dependencies: [],
       project_root: dir,
     });
@@ -152,36 +207,52 @@ describe("handleGenerateGhostBridge (integration, mocked generator)", () => {
     expect(result.message).toContain("typescript-python");
   });
 
-  test("venv is placed inside .ghost-bridge/bridges/.venv", async () => {
-    await handleGenerateGhostBridge({
-      bridge_name: "venv_check",
-      target_capability: "test",
-      dependencies: [],
-      project_root: dir,
-    });
+  test("typescript-ruby generates .rb sidecar", async () => {
+    const rubySidecar = [
+      "# frozen_string_literal: true",
+      "require_relative '../shared/sidecar_base'",
+      "HANDLERS = {}.freeze",
+      "run_sidecar(HANDLERS)",
+    ].join("\n");
 
-    expect(ensureVenv).toHaveBeenCalledWith(
-      expect.stringContaining(path.join(".ghost-bridge", "bridges", ".venv")),
-    );
-  });
-
-  test("non-default language_pair generates correct file extensions", async () => {
-    // typescript-ruby: client = .ts, sidecar = .rb
-    (generateBridge as ReturnType<typeof vi.fn>).mockResolvedValue({
-      client: VALID_TS,
-      sidecar: `# frozen_string_literal: true\nrequire_relative '../shared/sidecar_base'\nHANDLERS = {}.freeze\nrun_sidecar(HANDLERS)\n`,
-      rawResponse: "",
-    });
-
-    const result = await handleGenerateGhostBridge({
+    const result = await handleSetupStitch({
       bridge_name: "ruby_bridge",
-      target_capability: "test ruby",
-      dependencies: [],
       language_pair: "typescript-ruby",
+      client_code: VALID_TS,
+      sidecar_code: rubySidecar,
+      dependencies: [],
       project_root: dir,
     });
 
     expect(result.client_path).toMatch(/ruby_bridge\.ts$/);
     expect(result.sidecar_path).toMatch(/ruby_bridge\.rb$/);
+  });
+});
+
+// ── handleGetTemplates ────────────────────────────────────────────────────────
+
+describe("handleGetTemplates", () => {
+  test("returns templates and slot docs for typescript-python", async () => {
+    const result = await handleGetTemplates({ language_pair: "typescript-python" });
+
+    expect(result.clientFenceTag).toBe("typescript");
+    expect(result.sidecarFenceTag).toBe("python");
+    expect(result.clientTemplate).toContain("[CLAUDE_TYPE_DEFINITIONS_HERE]");
+    expect(result.sidecarTemplate).toContain("[CLAUDE_IMPORTS_HERE]");
+    expect(result.clientSlots).toBeTruthy();
+    expect(result.sidecarSlots).toBeTruthy();
+  });
+
+  test("returns templates for typescript-ruby", async () => {
+    const result = await handleGetTemplates({ language_pair: "typescript-ruby" });
+
+    expect(result.clientFenceTag).toBe("typescript");
+    expect(result.sidecarFenceTag).toBe("ruby");
+    expect(result.sidecarTemplate).toContain("run_sidecar");
+  });
+
+  test("throws for unknown language pair", async () => {
+    await expect(handleGetTemplates({ language_pair: "cobol-fortran" } as never))
+      .rejects.toThrow("Unknown language pair");
   });
 });

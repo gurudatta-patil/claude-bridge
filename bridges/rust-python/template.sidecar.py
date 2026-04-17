@@ -1,5 +1,5 @@
 """
-Ghost-Bridge — Python sidecar template.
+Stitch — Python sidecar template.
 
 Replace every section marked TODO with your own logic.
 
