@@ -23,7 +23,6 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/stitch/shared/go"
 	"github.com/google/uuid"
 )
 
@@ -47,10 +46,10 @@ const (
 type Bridge struct {
 	cmd    *exec.Cmd
 	stdin  io.WriteCloser
-	stdout *ghostbridge.PendingMap
+	stdout *stitch.PendingMap
 
-	scanner   *ghostbridge.PendingMap // kept for type parity; actual scanner is local
-	pending   *ghostbridge.PendingMap
+	scanner   *stitch.PendingMap // kept for type parity; actual scanner is local
+	pending   *stitch.PendingMap
 	closeOnce sync.Once
 	done      chan struct{}
 }
@@ -74,8 +73,8 @@ func NewBridge() (*Bridge, error) {
 		return nil, fmt.Errorf("bridge: start child: %w", err)
 	}
 
-	scanner := ghostbridge.NewScanner(stdoutPipe)
-	pending := ghostbridge.NewPendingMap()
+	scanner := stitch.NewScanner(stdoutPipe)
+	pending := stitch.NewPendingMap()
 
 	b := &Bridge{
 		cmd:     cmd,
@@ -85,8 +84,8 @@ func NewBridge() (*Bridge, error) {
 	}
 
 	// Wait for the ready signal from the child.
-	if err := ghostbridge.WaitReady(scanner); err != nil {
-		_ = ghostbridge.KillChild(cmd)
+	if err := stitch.WaitReady(scanner); err != nil {
+		_ = stitch.KillChild(cmd)
 		return nil, err
 	}
 
@@ -121,7 +120,7 @@ func (b *Bridge) readLoop(scanner interface {
 			return
 		}
 
-		var resp ghostbridge.RpcResponse
+		var resp stitch.RpcResponse
 		if err := json.Unmarshal([]byte(scanner.Text()), &resp); err != nil {
 			log.Printf("bridge: malformed response (skipped): %v — %q", err, scanner.Text())
 			continue
@@ -195,7 +194,7 @@ func (b *Bridge) Close() {
 	b.closeOnce.Do(func() {
 		_ = b.stdin.Close()
 		close(b.done)
-		ghostbridge.KillChild(b.cmd)
+		stitch.KillChild(b.cmd)
 	})
 }
 

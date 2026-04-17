@@ -1,8 +1,8 @@
-// Package ghostbridge provides shared primitives for Stitch Go clients.
+// Package stitch provides shared primitives for Stitch Go clients.
 //
 // All Go bridge clients (go-python, go-ruby, go-nodejs) import this package
 // instead of duplicating scanner, pending-map, kill, and ready-wait logic.
-package ghostbridge
+package stitch
 
 import (
 	"bufio"
@@ -164,7 +164,7 @@ func WaitReady(scanner *bufio.Scanner) error {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("ghostbridge: waiting for ready: %w", err)
+		return fmt.Errorf("stitch: waiting for ready: %w", err)
 	}
-	return errors.New("ghostbridge: child closed stdout before sending ready signal")
+	return errors.New("stitch: child closed stdout before sending ready signal")
 }

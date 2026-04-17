@@ -141,7 +141,7 @@ export function validatePythonClient(code: string): ValidationResult {
 export function validateGoClient(code: string): ValidationResult {
   const failures: string[] = [];
 
-  if (!code.includes("WaitReady") && !code.includes("ghostbridge.WaitReady"))
+  if (!code.includes("WaitReady") && !code.includes("stitch.WaitReady"))
     failures.push("Missing WaitReady call — required to wait for sidecar handshake");
 
   if (!code.includes("PendingMap") && !code.includes("pending"))

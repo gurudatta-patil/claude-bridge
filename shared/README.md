@@ -93,7 +93,7 @@ import { getVenvPython, getBinaryPath } from '../../shared/typescript/path-helpe
 
 ### Go client templates
 ```go
-import ghostbridge "github.com/stitch/shared/go"
+import stitch "github.com/stitch/shared/go"
 ```
 
 ### Python client templates

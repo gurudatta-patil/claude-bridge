@@ -14,8 +14,8 @@ import (
 	"sync"
 	"syscall"
 
-	ghostbridge "github.com/stitch/shared/go"
 	"github.com/google/uuid"
+	stitch "github.com/stitch/shared/go"
 )
 
 // ---------------------------------------------------------------------------
@@ -37,7 +37,7 @@ type NodeBridge struct {
 	cmd     *exec.Cmd
 	stdin   io.WriteCloser
 	mu      sync.Mutex
-	pending *ghostbridge.PendingMap
+	pending *stitch.PendingMap
 	done    chan struct{}
 }
 
@@ -65,8 +65,8 @@ func NewNodeBridge(scriptPath string, args ...string) (*NodeBridge, error) {
 		return nil, fmt.Errorf("start node: %w", err)
 	}
 
-	scanner := ghostbridge.NewScanner(stdout)
-	pending := ghostbridge.NewPendingMap()
+	scanner := stitch.NewScanner(stdout)
+	pending := stitch.NewPendingMap()
 
 	b := &NodeBridge{
 		cmd:     cmd,
@@ -76,7 +76,7 @@ func NewNodeBridge(scriptPath string, args ...string) (*NodeBridge, error) {
 	}
 
 	// Wait for {"ready":true} before returning.
-	if err := ghostbridge.WaitReady(scanner); err != nil {
+	if err := stitch.WaitReady(scanner); err != nil {
 		_ = cmd.Process.Kill()
 		return nil, fmt.Errorf("child exited before sending ready signal: %w", err)
 	}
@@ -105,7 +105,7 @@ func (b *NodeBridge) readLoop(scanner interface {
 }) {
 	defer close(b.done)
 	for scanner.Scan() {
-		var resp ghostbridge.RpcResponse
+		var resp stitch.RpcResponse
 		if err := json.Unmarshal(scanner.Bytes(), &resp); err != nil {
 			continue // malformed line — skip
 		}

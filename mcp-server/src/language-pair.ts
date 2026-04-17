@@ -418,7 +418,7 @@ GO client — fill the TODO sections in template.client.go:
   Add your own bridge.Call("method", params) calls in main().
 
 Non-negotiable Go constraints:
-  • Keep ghostbridge.WaitReady, ghostbridge.PendingMap usage unchanged.
+  • Keep stitch.WaitReady, stitch.PendingMap usage unchanged.
   • Keep bridge.Close() cleanup in main().`.trim();
 
 const PY_CLIENT_SLOTS = `

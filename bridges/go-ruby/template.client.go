@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	ghostbridge "github.com/stitch/shared/go"
 	"github.com/google/uuid"
+	stitch "github.com/stitch/shared/go"
 )
 
 // Request is a JSON-RPC request sent to the Ruby sidecar.
@@ -26,7 +26,7 @@ type Client struct {
 	cmd     *exec.Cmd
 	stdin   io.WriteCloser
 	writeMu sync.Mutex // serialises writes to stdin
-	pending *ghostbridge.PendingMap
+	pending *stitch.PendingMap
 	done    chan struct{}
 	once    sync.Once
 }
@@ -54,8 +54,8 @@ func New(scriptPath string, rubyArgs ...string) (*Client, error) {
 		return nil, fmt.Errorf("go-ruby: start ruby: %w", err)
 	}
 
-	scanner := ghostbridge.NewScanner(stdout)
-	pending := ghostbridge.NewPendingMap()
+	scanner := stitch.NewScanner(stdout)
+	pending := stitch.NewPendingMap()
 
 	c := &Client{
 		cmd:     cmd,
@@ -67,7 +67,7 @@ func New(scriptPath string, rubyArgs ...string) (*Client, error) {
 	// Wait for the ready signal.
 	readyCh := make(chan error, 1)
 	go func() {
-		if err := ghostbridge.WaitReady(scanner); err != nil {
+		if err := stitch.WaitReady(scanner); err != nil {
 			readyCh <- err
 			return
 		}
@@ -75,7 +75,7 @@ func New(scriptPath string, rubyArgs ...string) (*Client, error) {
 
 		// Dispatch loop — runs for the lifetime of the process.
 		for scanner.Scan() {
-			var resp ghostbridge.RpcResponse
+			var resp stitch.RpcResponse
 			if err := json.Unmarshal(scanner.Bytes(), &resp); err != nil {
 				continue // malformed frame — skip
 			}
@@ -140,7 +140,7 @@ func (c *Client) Close() error {
 	var closeErr error
 	c.once.Do(func() {
 		_ = c.stdin.Close()
-		ghostbridge.KillChild(c.cmd)
+		stitch.KillChild(c.cmd)
 		closeErr = nil
 	})
 	return closeErr

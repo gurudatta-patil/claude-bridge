@@ -61,7 +61,9 @@ func TestAdd(t *testing.T) {
 	if err != nil {
 		t.Fatalf("add: %v", err)
 	}
-	var got struct{ Sum float64 `json:"sum"` }
+	var got struct {
+		Sum float64 `json:"sum"`
+	}
 	if err := json.Unmarshal(res, &got); err != nil {
 		t.Fatalf("unmarshal: %v", err)
 	}

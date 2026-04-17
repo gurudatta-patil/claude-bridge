@@ -36,7 +36,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("add: %v", err)
 	}
-	var addResult struct{ Sum float64 `json:"sum"` }
+	var addResult struct {
+		Sum float64 `json:"sum"`
+	}
 	_ = json.Unmarshal(res, &addResult)
 	fmt.Printf("add result: sum=%v\n", addResult.Sum)
 
