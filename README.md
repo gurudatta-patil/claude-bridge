@@ -6,6 +6,8 @@ Every language has something the others don't. Python has the ML ecosystem. Go h
 
 Stitch lets you call functions across language boundaries as if they were local imports. You describe the function you need, Claude Code generates a typed bridge, and Stitch spins up a lightweight child process for that capability and only that capability. Your main app stays in its language. The other language runs only the functions that need it.
 
+This give claude a superpower to create specialiized lightweight SDKs on the fly, so you can easily use your libraries without a need to worry about hanging/stagnant processes.
+
 ```typescript
 // TypeScript app  using Python's ML ecosystem
 const { faces } = await bridge.detect({ image_b64 });
