@@ -1,0 +1,17 @@
+Scientists have long debated the nature of consciousness. Some argue that consciousness is a purely physical phenomenon, arising from the complex interactions of neurons in the brain. Others maintain that consciousness involves something more, perhaps a non-physical dimension that science has yet to fully explain.
+
+The hard problem of consciousness, coined by philosopher David Chalmers, refers to the difficulty of explaining why and how physical processes in the brain give rise to subjective experience. Why does seeing the colour red feel like something? Why is there an inner life at all?
+
+Research in neuroscience has made remarkable progress in identifying the neural correlates of consciousness. Brain imaging studies show that certain regions light up during conscious perception. The prefrontal cortex, the thalamus, and the claustrum all appear to play important roles. Yet identifying which brain regions are active during consciousness does not fully answer why those activations produce experience.
+
+One prominent theory is Integrated Information Theory, proposed by neuroscientist Giulio Tononi. It suggests that consciousness corresponds to the amount of integrated information a system generates. A system is conscious to the degree that it cannot be reduced to independent parts. This theory predicts that consciousness is not exclusive to biological brains and might exist in other complex systems to varying degrees.
+
+Global Workspace Theory, developed by Bernard Baars, takes a different approach. It proposes that consciousness arises when information is broadcast widely across the brain through a global workspace. Unconscious processes handle specialised tasks in parallel, but information becomes conscious only when it enters this shared workspace and becomes available to many cognitive processes at once.
+
+Critics of both theories argue that we are still far from solving the hard problem. Even a complete account of information processing in the brain would not explain why processing feels like anything at all. The explanatory gap between objective neural descriptions and subjective experience remains wide.
+
+Meanwhile, artificial intelligence researchers grapple with related questions. As language models and neural networks grow more sophisticated, questions arise about whether they might be conscious or might develop something like experience. Most researchers remain sceptical, yet the question forces clearer thinking about what consciousness actually requires.
+
+Philosophy of mind continues to evolve. Panpsychism, the view that consciousness is a fundamental feature of the universe present in all matter to some degree, has attracted renewed interest among serious philosophers. It sidesteps some puzzles by treating consciousness as basic rather than emergent, though it raises difficult questions about how micro-experiences combine into the rich unified experience of a human being.
+
+Whatever the ultimate answer, the study of consciousness sits at a remarkable intersection of neuroscience, physics, philosophy, and computer science. Progress requires not just better experiments but deeper clarity about the concepts themselves.

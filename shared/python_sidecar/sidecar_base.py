@@ -23,7 +23,6 @@ import io as _io
 import json as _json
 import os as _os
 import sys as _sys
-import threading as _threading
 import traceback as _traceback
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -79,30 +78,6 @@ def _send_error(req_id: str, message: str, tb: str = "") -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stdin-EOF watchdog
-# ─────────────────────────────────────────────────────────────────────────────
-
-def _start_watchdog() -> None:
-    """
-    Daemon thread: blocks on stdin.read(1).
-    When the parent process dies its end of the pipe is closed; read() returns
-    b"" and we call os._exit(0) to avoid leaving a zombie sidecar process.
-    """
-    def _watch() -> None:
-        try:
-            raw = _sys.stdin.buffer if hasattr(_sys.stdin, "buffer") else _sys.stdin
-            while True:
-                chunk = raw.read(1)
-                if chunk == b"":
-                    _os._exit(0)
-        except Exception:
-            _os._exit(0)
-
-    t = _threading.Thread(target=_watch, name="stdin-watchdog", daemon=True)
-    t.start()
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Main sidecar loop
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -125,15 +100,18 @@ def run_sidecar(handlers: dict) -> None:
             return params
 
         run_sidecar({"echo": handle_echo})
-    """
-    # 1. Start the stdin-EOF watchdog before anything else.
-    _start_watchdog()
 
-    # 2. Signal readiness.  The parent waits for this line before sending
+    Note on zombie-prevention: rather than a competing watchdog thread that
+    races with readline() for the BufferedReader lock, we rely on the fact
+    that ``for raw_line in sys.stdin`` exits when stdin reaches EOF (parent
+    closed the pipe).  We call ``os._exit(0)`` after the loop — no separate
+    thread needed, no race condition possible.
+    """
+    # 1. Signal readiness.  The parent waits for this line before sending
     #    the first request.
     _send({"ready": True})
 
-    # 3. Line-by-line JSON-RPC loop.
+    # 2. Line-by-line JSON-RPC loop.  Exits cleanly when stdin is closed.
     for raw_line in _sys.stdin:
         line = raw_line.strip()
         if not line:
@@ -159,3 +137,6 @@ def run_sidecar(handlers: dict) -> None:
         except Exception as exc:
             tb = _traceback.format_exc()
             _send_error(req_id, str(exc), tb)
+
+    # 3. stdin reached EOF — parent closed the pipe or died.  Exit cleanly.
+    _os._exit(0)

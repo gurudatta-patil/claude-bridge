@@ -19,7 +19,6 @@ _sys.stdout = _sys.stderr
 import base64 as _base64
 import json as _json
 import os as _os
-import threading as _threading
 import time as _time
 import traceback as _traceback
 
@@ -38,19 +37,6 @@ def _send_result(req_id: str, result: dict) -> None:
 
 def _send_error(req_id: str, message: str, tb: str = "") -> None:
     _send({"id": req_id, "error": {"message": message, "traceback": tb}})
-
-
-# ── Watchdog ──────────────────────────────────────────────────────────────────
-
-def _start_watchdog() -> None:
-    def _watch() -> None:
-        raw = _sys.stdin.buffer if hasattr(_sys.stdin, "buffer") else _sys.stdin
-        while True:
-            if raw.read(1) == b"":
-                _os._exit(0)
-
-    t = _threading.Thread(target=_watch, name="stdin-watchdog", daemon=True)
-    t.start()
 
 
 # ── Handlers ─────────────────────────────────────────────────────────────────
@@ -109,7 +95,6 @@ def _dispatch(method: str, params: dict) -> dict:
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    _start_watchdog()
     _send({"ready": True})
 
     for raw_line in _sys.stdin:
@@ -132,6 +117,9 @@ def main() -> None:
         except Exception as exc:
             tb = _traceback.format_exc()
             _send_error(req_id, str(exc), tb)
+
+    # stdin reached EOF — parent closed the pipe or died.
+    _os._exit(0)
 
 
 if __name__ == "__main__":

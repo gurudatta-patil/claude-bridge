@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ghost-Bridge · Face Detection</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d0d0d;
+      color: #e8e8e8;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+      gap: 20px;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      color: #a0e0ff;
+      text-transform: uppercase;
+    }
+
+    #stage {
+      position: relative;
+      width: 640px;
+      max-width: 100%;
+      border: 1px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111;
+    }
+
+    video, canvas {
+      display: block;
+      width: 100%;
+    }
+
+    video { position: static; }
+
+    canvas#overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    button {
+      background: #1a1a2e;
+      color: #a0e0ff;
+      border: 1px solid #3a3a5e;
+      border-radius: 6px;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.15s;
+    }
+    button:hover { background: #252545; }
+    button:disabled { opacity: 0.4; cursor: default; }
+
+    #fps-badge {
+      font-size: 0.75rem;
+      color: #666;
+    }
+
+    #status {
+      font-size: 0.8rem;
+      color: #888;
+      text-align: center;
+      min-height: 1.4em;
+    }
+    #status.error { color: #ff6b6b; }
+    #status.ok    { color: #6bffb8; }
+
+    #face-count {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #a0e0ff;
+      text-align: center;
+    }
+    #face-count span { font-size: 0.75rem; color: #666; display: block; }
+
+    footer {
+      font-size: 0.7rem;
+      color: #444;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ghost-Bridge · Face Detection</h1>
+
+  <div id="stage">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <div id="controls">
+    <button id="btn-start">Start Camera</button>
+    <button id="btn-stop" disabled>Stop</button>
+    <span id="fps-badge">– fps</span>
+  </div>
+
+  <div id="face-count">–<span>faces detected</span></div>
+  <div id="status">Camera not started.</div>
+
+  <footer>TypeScript → Python bridge via Ghost-Bridge · opencv-python-headless</footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
