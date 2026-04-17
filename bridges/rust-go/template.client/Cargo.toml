@@ -1,0 +1,36 @@
+[package]
+name        = "go-bridge-client"
+version     = "0.1.0"
+edition     = "2021"
+description = "Ghost-Bridge template: Rust client that drives a Go sidecar over JSON-RPC / stdio"
+authors     = ["Ghost-Bridge contributors"]
+license     = "MIT"
+
+[[bin]]
+name = "go-bridge-client"
+path = "src/main.rs"
+
+[dependencies]
+# JSON serialisation / deserialisation
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# UUID generation for request IDs
+uuid = { version = "1", features = ["v4"] }
+
+# Cross-platform Ctrl-C signal handling
+ctrlc = { version = "3", features = ["termination"] }
+
+# Optional: POSIX-only graceful SIGTERM before SIGKILL.
+# Uncomment if you need it; keep feature-gated to avoid breaking Windows builds.
+# [target.'cfg(unix)'.dependencies]
+# nix = { version = "0.27", features = ["signal"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[profile.release]
+opt-level = 3
+lto       = true
+codegen-units = 1
+strip     = "symbols"
