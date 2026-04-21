@@ -20,11 +20,15 @@ export class [CLAUDE_CLIENT_CLASS_NAME] extends BridgeClientBase {
   private readonly scriptPath: string;
   private child: ReturnType<typeof spawn> | null = null;
 
-  constructor(options?: { scriptPath?: string }) {
+  /** Ruby runtime executable – 'ruby' (default) or 'jruby'. */
+  private readonly runtime: string;
+
+  constructor(options?: { scriptPath?: string; runtime?: 'ruby' | 'jruby' }) {
     super();
     this.scriptPath =
       options?.scriptPath ??
       path.join(__dirname, '[CLAUDE_DEFAULT_SCRIPT_NAME].rb');
+    this.runtime = options?.runtime ?? 'ruby';
   }
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
@@ -32,7 +36,7 @@ export class [CLAUDE_CLIENT_CLASS_NAME] extends BridgeClientBase {
   async start(): Promise<void> {
     if (this.child) return; // already running
 
-    this.child = spawn('ruby', [this.scriptPath], {
+    this.child = spawn(this.runtime, [this.scriptPath], {
       stdio: ['pipe', 'pipe', 'inherit'],
     });
 

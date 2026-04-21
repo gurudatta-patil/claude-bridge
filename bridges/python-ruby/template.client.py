@@ -32,12 +32,16 @@ class RubyBridge(BridgeClientBase):
 
     Usage (context manager – recommended)::
 
-        with RubyBridge(["ruby", "my_sidecar.rb"]) as bridge:
+        with RubyBridge() as bridge:
+            result = bridge.call("add", {"a": 1, "b": 2})
+
+        # JRuby runtime:
+        with RubyBridge(runtime='jruby') as bridge:
             result = bridge.call("add", {"a": 1, "b": 2})
 
     Usage (manual lifecycle)::
 
-        bridge = RubyBridge(["ruby", "my_sidecar.rb"])
+        bridge = RubyBridge()
         try:
             result = bridge.call("echo", {"msg": "hi"})
         finally:
@@ -46,11 +50,14 @@ class RubyBridge(BridgeClientBase):
 
     def __init__(
         self,
-        cmd: list[str] = SIDECAR_CMD,
+        cmd: list[str] | None = None,
         ready_timeout: float = READY_TIMEOUT,
         call_timeout: float = CALL_TIMEOUT,
         env: dict[str, str] | None = None,
+        runtime: str = 'ruby',
     ) -> None:
+        if cmd is None:
+            cmd = [runtime, "sidecar.rb"]
         super().__init__(cmd, ready_timeout=ready_timeout, call_timeout=call_timeout, env=env)
 
     def call(self, method: str, params: dict[str, Any] | None = None) -> Any:

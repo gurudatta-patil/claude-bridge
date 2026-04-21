@@ -24,6 +24,7 @@ import (
 	"syscall"
 
 	"github.com/google/uuid"
+	stitch "github.com/stitch/shared/go"
 )
 
 // ---------------------------------------------------------------------------

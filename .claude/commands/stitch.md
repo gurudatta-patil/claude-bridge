@@ -27,8 +27,8 @@ You are the Stitch generator. The user wants to create an IPC bridge between two
 
 7. For Python sidecars: run the venv + install steps:
    ```
-   python3 -m venv .stitch/.venv
-   .stitch/.venv/bin/pip install <dependencies>
+   python3 -m venv .stitch/bridges/.venv
+   .stitch/bridges/.venv/bin/pip install <dependencies>
    ```
    (Use `uv venv` + `uv pip install` if `uv` is available - check with `which uv`)
 

@@ -25,6 +25,12 @@ import os as _os
 import sys as _sys
 import traceback as _traceback
 
+
+class StreamResponse:
+    """Wrap a generator to tell run_sidecar to send chunk frames."""
+    def __init__(self, generator):
+        self.generator = generator
+
 # ─────────────────────────────────────────────────────────────────────────────
 # RPC output handle
 #
@@ -107,9 +113,17 @@ def run_sidecar(handlers: dict) -> None:
     closed the pipe).  We call ``os._exit(0)`` after the loop - no separate
     thread needed, no race condition possible.
     """
-    # 1. Signal readiness.  The parent waits for this line before sending
-    #    the first request.
-    _send({"ready": True})
+    _debug = _os.environ.get("STITCH_DEBUG") == "1"
+
+    # Built-in handlers merged with user-supplied handlers.
+    # User handlers take precedence if they shadow a built-in name.
+    def _ping(_params: dict):
+        return {"pong": True, "pid": _os.getpid()}
+
+    all_handlers = {"__ping__": _ping, **handlers}
+
+    # 1. Signal readiness, advertising all available method names.
+    _send({"ready": True, "methods": list(all_handlers.keys())})
 
     # 2. Line-by-line JSON-RPC loop.  Exits cleanly when stdin is closed.
     for raw_line in _sys.stdin:
@@ -124,19 +138,64 @@ def run_sidecar(handlers: dict) -> None:
             method: str = msg["method"]
             params: dict = msg.get("params") or {}
 
-            handler = handlers.get(method)
+            traceparent: str = msg.get("traceparent", "")
+
+            if _debug:
+                log_entry: dict = {"dir": "→", "id": req_id, "method": method}
+                if traceparent:
+                    log_entry["traceparent"] = traceparent
+                _sys.stderr.write(
+                    _json.dumps(log_entry, separators=(",", ":")) + "\n"
+                )
+                _sys.stderr.flush()
+
+            handler = all_handlers.get(method)
             if handler is None:
                 _send_error(req_id, f"Unknown method: {method!r}")
+                if _debug:
+                    log_entry = {"dir": "←", "id": req_id, "ok": False}
+                    if traceparent:
+                        log_entry["traceparent"] = traceparent
+                    _sys.stderr.write(
+                        _json.dumps(log_entry, separators=(",", ":")) + "\n"
+                    )
+                    _sys.stderr.flush()
                 continue
 
             result = handler(params)
-            _send_result(req_id, result)
+            if isinstance(result, StreamResponse):
+                for chunk in result.generator:
+                    _send({"id": req_id, "chunk": chunk})
+                _send_result(req_id, {})
+            else:
+                _send_result(req_id, result)
+
+            if _debug:
+                log_entry = {"dir": "←", "id": req_id, "ok": True}
+                if traceparent:
+                    log_entry["traceparent"] = traceparent
+                _sys.stderr.write(
+                    _json.dumps(log_entry, separators=(",", ":")) + "\n"
+                )
+                _sys.stderr.flush()
 
         except _json.JSONDecodeError as exc:
             _send_error(req_id, f"JSON parse error: {exc}")
+            if _debug:
+                _sys.stderr.write(
+                    _json.dumps({"dir": "←", "id": req_id, "ok": False},
+                                separators=(",", ":")) + "\n"
+                )
+                _sys.stderr.flush()
         except Exception as exc:
             tb = _traceback.format_exc()
             _send_error(req_id, str(exc), tb)
+            if _debug:
+                _sys.stderr.write(
+                    _json.dumps({"dir": "←", "id": req_id, "ok": False},
+                                separators=(",", ":")) + "\n"
+                )
+                _sys.stderr.flush()
 
     # 3. stdin reached EOF - parent closed the pipe or died.  Exit cleanly.
     _os._exit(0)

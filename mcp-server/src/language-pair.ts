@@ -44,12 +44,15 @@ export type LanguagePairName =
   | "go-python"
   | "go-ruby"
   | "go-nodejs"
+  | "go-rust"
   | "python-go"
   | "python-ruby"
   | "python-rust"
+  | "python-nodejs"
   | "rust-go"
   | "rust-python"
-  | "rust-ruby";
+  | "rust-ruby"
+  | "rust-nodejs";
 
 export const ALL_PAIRS: LanguagePairName[] = [
   "typescript-python",
@@ -59,12 +62,15 @@ export const ALL_PAIRS: LanguagePairName[] = [
   "go-python",
   "go-ruby",
   "go-nodejs",
+  "go-rust",
   "python-go",
   "python-ruby",
   "python-rust",
+  "python-nodejs",
   "rust-go",
   "rust-python",
   "rust-ruby",
+  "rust-nodejs",
 ];
 
 /** Code-fence language tag for each language. */
@@ -157,18 +163,26 @@ function setupRustClient(_repoRoot: string, _sharedDir: string): void {}
  * Go client needs shared/go/bridge_client.go + a go.mod in the shared dir
  * so the replace directive in the bridge go.mod resolves.
  */
-function setupGoClient(repoRoot: string, sharedDir: string): void {
+function setupGoClient(repoRoot: string, sharedDir: string, bridgesDir: string): void {
   const goSharedDir = path.join(sharedDir, "go");
   mkdirSync(goSharedDir, { recursive: true });
   cp(
     path.join(repoRoot, "shared", "go", "bridge_client.go"),
     path.join(goSharedDir, "bridge_client.go"),
   );
-  // Write go.mod so Go toolchain can resolve the module.
+  // Write go.mod so Go toolchain can resolve the shared module.
   write(
     path.join(goSharedDir, "go.mod"),
     "module github.com/stitch/shared/go\n\ngo 1.21\n",
   );
+  // Write go.mod for the generated bridge file so `go build` resolves deps.
+  const bridgesGoMod = path.join(bridgesDir, "go.mod");
+  if (!existsSync(bridgesGoMod)) {
+    write(
+      bridgesGoMod,
+      "module github.com/stitch/bridge\n\ngo 1.21\n\nrequire (\n\tgithub.com/google/uuid v1.6.0\n\tgithub.com/stitch/shared/go v0.0.0\n)\n\nreplace github.com/stitch/shared/go => ./shared/go\n",
+    );
+  }
 }
 
 // ── Per-sidecar-language sidecar setup ───────────────────────────────────────
@@ -489,7 +503,7 @@ function makePairDef(
       if (clientLang === "typescript") setupTypeScriptClient(repoRoot, sharedDir);
       else if (clientLang === "python") setupPythonClient(repoRoot, sharedDir);
       else if (clientLang === "rust") setupRustClient(repoRoot, sharedDir);
-      else if (clientLang === "go") setupGoClient(repoRoot, sharedDir);
+      else if (clientLang === "go") setupGoClient(repoRoot, sharedDir, _bridgesDir);
     },
   };
 }
@@ -644,6 +658,34 @@ export const PAIRS: Record<LanguagePairName, PairDef> = {
     {
       patchSidecar: patchRubySidecarPath,
     },
+  ),
+
+  "go-rust": makePairDef(
+    "go", "rust",
+    "template.client.go", "template.sidecar/src/main.rs",
+    GO_CLIENT_SLOTS, RUST_SIDECAR_SLOTS,
+    {
+      sidecarAuxTemplates: [
+        ["template.sidecar/Cargo.toml", "Cargo.toml"],
+      ],
+      patchAux: (filename, code, name) =>
+        filename === "Cargo.toml" ? patchRustCargoName(code, name) : code,
+    },
+  ),
+
+  "python-nodejs": makePairDef(
+    "python", "nodejs",
+    "template.client.py", "template.sidecar.js",
+    PY_CLIENT_SLOTS, JS_SIDECAR_SLOTS,
+    {
+      patchClient: patchPythonClientPath,
+    },
+  ),
+
+  "rust-nodejs": makePairDef(
+    "rust", "nodejs",
+    "template.client/src/main.rs", "template.sidecar.js",
+    RUST_CLIENT_SLOTS, JS_SIDECAR_SLOTS,
   ),
 };
 

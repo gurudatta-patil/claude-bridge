@@ -8,7 +8,13 @@ import * as path from "path";
 const MARKER_START = "# stitch-start";
 const MARKER_END = "# stitch-end";
 
-const MANAGED_ENTRIES = [".stitch/", ".stitch/bridges/"];
+const MANAGED_ENTRIES = [
+  ".stitch/bridges/.venv/",
+  ".stitch/shared/",
+  ".stitch/bridges/*_sidecar/target/",
+  ".stitch/bridges/*_sidecar/*.exe",
+  ".stitch/bridges/*.exe",
+];
 
 /**
  * Ensure `.stitch/` paths are present in `<projectRoot>/.gitignore`.

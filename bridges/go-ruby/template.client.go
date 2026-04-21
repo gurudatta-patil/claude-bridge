@@ -31,14 +31,38 @@ type Client struct {
 	once    sync.Once
 }
 
+// ClientOption is a functional option for configuring a Client.
+type ClientOption func(*clientConfig)
+
+type clientConfig struct {
+	runtime string // "ruby" (default) or "jruby"
+}
+
+// WithRuntime sets the Ruby runtime executable (e.g. "jruby").
+// Defaults to "ruby" when not specified.
+func WithRuntime(runtime string) ClientOption {
+	return func(cfg *clientConfig) { cfg.runtime = runtime }
+}
+
 // New starts the Ruby sidecar at scriptPath (invoked as `ruby scriptPath`)
 // and waits for the {"ready":true} handshake before returning.
 //
 // Any additional Ruby interpreter flags can be supplied via rubyArgs; they are
-// inserted between "ruby" and scriptPath.
+// inserted between the runtime executable and scriptPath.
+//
+// Use WithRuntime("jruby") to run the sidecar under JRuby instead of MRI Ruby.
 func New(scriptPath string, rubyArgs ...string) (*Client, error) {
+	return NewWithOptions(scriptPath, nil, rubyArgs...)
+}
+
+// NewWithOptions is like New but accepts functional options (e.g. WithRuntime).
+func NewWithOptions(scriptPath string, opts []ClientOption, rubyArgs ...string) (*Client, error) {
+	cfg := &clientConfig{runtime: "ruby"}
+	for _, o := range opts {
+		o(cfg)
+	}
 	args := append(rubyArgs, scriptPath)
-	cmd := exec.Command("ruby", args...)
+	cmd := exec.Command(cfg.runtime, args...)
 	cmd.Stderr = os.Stderr
 
 	stdin, err := cmd.StdinPipe()

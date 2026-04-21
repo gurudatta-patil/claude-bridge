@@ -112,10 +112,12 @@ await bridge.stop();
 
 | Client \ Sidecar | Python | Ruby | Go | Rust | Node.js |
 |-----------------|:------:|:----:|:--:|:----:|:-------:|
-| **TypeScript**  |   ✅   |  ✅  | ✅ |  ✅  |        |
-| **Go**          |   ✅   |  ✅  |   |     |   ✅    |
-| **Python**      |       |  ✅  | ✅ |  ✅  |        |
-| **Rust**        |   ✅   |  ✅  | ✅ |     |        |
+| **TypeScript**  |   ✅   |  ✅  | ✅ |  ✅  |         |
+| **Go**          |   ✅   |  ✅  |    |  ✅  |   ✅    |
+| **Python**      |        |  ✅  | ✅ |  ✅  |   ✅    |
+| **Rust**        |   ✅   |  ✅  | ✅ |      |   ✅    |
+
+✅ = implemented &nbsp; (TypeScript→Node.js omitted — TypeScript runs on Node.js, bridge unnecessary)
 
 Specify `language_pair` as `<client>-<sidecar>`, e.g. `typescript-python`, `go-ruby`, `rust-go`.
 
@@ -162,4 +164,61 @@ Each bridge is scoped to exactly the functions you asked for. You're not embeddi
 > **Note:** `samples/` contains demonstration projects only. They are not part of Stitch itself and are not required for any project that uses the MCP.
 
 ---
+
+## Future scope
+
+Each bridge pair has its own `future-scope.md` with detailed ideas. Below is a summary of cross-cutting themes that apply to most or all pairs.
+
+### Planned bridge pairs
+
+> **TypeScript → Node.js** is intentionally omitted — TypeScript already runs on Node.js, so there is nothing to bridge.
+
+### Cross-cutting improvements
+
+**Health-check / ping** ✅  
+Every sidecar now has a built-in `__ping__` method. All clients expose `ping()` / `Ping()` — call it before the first real request to verify the child is alive.
+
+**Process pooling** ✅  
+`BridgePool` is available in Python, TypeScript, and Go. Spawn N workers and route calls with least-connections — transparent to callers, full multi-core utilisation for GIL-limited or single-threaded sidecars.
+
+**Auto-restart** ✅  
+Python and TypeScript clients accept `auto_restart=True` / `autoRestart: true`. On unexpected child exit the bridge respawns with exponential back-off (100 ms × 2ⁿ, capped at 10 s). Explicit `close()` / `stop()` never triggers a restart.
+
+**Structured debug logging** ✅  
+Set `STITCH_DEBUG=1` in the sidecar environment. Every request and response is logged as a JSON line on stderr: `{"dir":"→","id":"...","method":"..."}` / `{"dir":"←","id":"...","ok":true}`.
+
+**Methods list in ready signal** ✅  
+Sidecars now emit `{"ready": true, "methods": ["echo", "add", "__ping__"]}`. Clients can inspect the list before making calls and fail fast on unknown methods.
+
+**Timeout / context propagation** ✅  
+Go clients have `CallWithContext(ctx, ...)` — pass any `context.Context` with a deadline or cancellation. Python clients have per-call `timeout=` on `_call()`. TypeScript uses the `call()` timeout option.
+
+**Supervised auto-restart (Rust)** ✅  
+`SupervisedBridge<T, F>` wraps any Rust bridge. `restart()` applies exponential back-off and re-spawns up to `max_restarts` times.
+
+**Streaming responses** ✅  
+Wire-format extension: `{"id":"...","chunk":{...}}` frames followed by terminal `{"id":"...","result":{}}`. All sidecar bases support `StreamResponse`/`StitchStream`/`SidecarResult::Stream`. Client-side: `stream_call()` generator (Python), `stream()` async generator (TypeScript, Rust), `Stream()` channel (Go).
+
+**Async clients** ✅  
+`AsyncBridgeClientBase` (Python) uses `asyncio.create_subprocess_exec` + `asyncio.Future`. `AsyncBridge` (Rust) uses `tokio::process::Command` + `tokio::sync::oneshot`.
+
+**Hot reload** ✅  
+`watch_path` polling thread in Python client restarts the sidecar when the source file changes. `withHotReload()` Proxy wrapper in TypeScript.
+
+**OpenTelemetry trace propagation** ✅  
+`traceparent` field passthrough in JSON-RPC envelope. All sidecar bases include it in `STITCH_DEBUG` log lines. `traceparent=` parameter on `_call()` / `stream_call()` in Python; `setTraceparent()` in TypeScript; `CallOptions.Traceparent` in Go.
+
+**Type sharing** ✅  
+- Rust → TypeScript: `ts-rs` derive macro guide in `tools/ts-rs-export/`
+- Python (Pydantic) → TypeScript: `tools/pydantic-to-ts/pydantic_to_ts.py` — emits `interface` + Zod schemas
+- Go → Python: `tools/go-gen-python-stubs/main.go` — emits `TypedDict` or `BaseModel` from Go struct JSON tags
+
+**JRuby support** ✅  
+All four Ruby-targeting clients accept a `runtime: 'jruby'` / `WithRuntime("jruby")` option. Protocol is unchanged.
+
+**tsx Node.js sidecars** ✅  
+Node.js sidecar templates include instructions for running with `npx tsx sidecar.ts` — no build step required.
+
+**Streaming responses (binary framing, mmap)** — planned  
+Length-prefixed MessagePack/Protobuf and `mmap`-backed shared memory transport are the remaining future items.
 

@@ -1,0 +1,28 @@
+[package]
+name = "rust-sidecar"
+version = "0.1.0"
+edition = "2021"
+
+# Rename this package to match your project, e.g.:
+#   name = "my_service"
+# The compiled binary will be:
+#   target/release/my_service   (Linux / macOS)
+#   target/release/my_service.exe  (Windows)
+
+[[bin]]
+name = "rust-sidecar"
+path = "src/main.rs"
+
+[dependencies]
+serde_json = "1"
+# The stitch_sidecar crate provides run_sidecar(), send_ready(), send_response(),
+# and send_error().  It handles the BufWriter setup, ctrl-c handler, ready signal,
+# and the stdin dispatch loop so you only need to implement handler functions.
+stitch_sidecar = { path = "../../shared/rust_sidecar" }
+
+[profile.release]
+# Minimise binary size while keeping reasonable performance.
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

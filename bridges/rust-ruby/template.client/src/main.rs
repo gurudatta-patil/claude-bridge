@@ -38,14 +38,18 @@ pub struct RubyBridge {
 
 impl RubyBridge {
     /// Spawn the Ruby sidecar at `sidecar_path` and wait for its `{"ready":true}` handshake.
-    pub fn spawn(sidecar_path: &str, ready_timeout: Duration) -> Result<Self, String> {
-        let mut child = Command::new("ruby")
+    ///
+    /// `runtime` selects the Ruby executable: `"ruby"` (default) or `"jruby"`.
+    /// Pass `"ruby"` explicitly or use the convenience wrapper [`RubyBridge::spawn`] which
+    /// defaults to MRI Ruby.
+    pub fn spawn_with_runtime(sidecar_path: &str, runtime: &str, ready_timeout: Duration) -> Result<Self, String> {
+        let mut child = Command::new(runtime)
             .arg(sidecar_path)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::inherit())
             .spawn()
-            .map_err(|e| format!("failed to spawn ruby: {e}"))?;
+            .map_err(|e| format!("failed to spawn {runtime}: {e}"))?;
 
         let stdout = child.stdout.take().expect("stdout not captured");
         let stdin = child.stdin.take().expect("stdin not captured");
@@ -66,6 +70,12 @@ impl RubyBridge {
             pending,
             _reader: reader,
         })
+    }
+
+    /// Spawn the Ruby sidecar using MRI Ruby (`ruby`).  For JRuby use
+    /// [`RubyBridge::spawn_with_runtime`] with `runtime = "jruby"`.
+    pub fn spawn(sidecar_path: &str, ready_timeout: Duration) -> Result<Self, String> {
+        Self::spawn_with_runtime(sidecar_path, "ruby", ready_timeout)
     }
 
     /// Send a JSON-RPC request and block until a response arrives or `timeout` elapses.

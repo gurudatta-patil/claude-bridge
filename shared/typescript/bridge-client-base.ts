@@ -18,6 +18,8 @@ export interface RpcRequest {
   id: string;
   method: string;
   params: Record<string, unknown>;
+  /** Injected automatically when BridgeClientBase.traceparent is set. */
+  traceparent?: string;
 }
 
 export interface RpcSuccess {
@@ -87,20 +89,45 @@ export function createPendingMap(): Map<string, PendingCall> {
 // Abstract base class
 // ─────────────────────────────────────────────────────────────────────────────
 
+export interface BridgeClientOptions {
+  autoRestart?: boolean;
+  maxRestarts?: number;
+}
+
 export abstract class BridgeClientBase {
   protected pending: Map<string, PendingCall> = createPendingMap();
   protected ready: Promise<void>;
   protected resolveReady!: () => void;
   protected rejectReady!: (err: Error) => void;
   protected dead = false;
+  protected autoRestart = false;
+  protected maxRestarts = 3;
+  protected _restartCount = 0;
+  /** When set, every outgoing request includes this traceparent header value. */
+  protected traceparent?: string;
   private buffer = "";
   private cleanupRegistered = false;
+  private streamPending = new Map<string, {
+    push: (chunk: Record<string, unknown>) => void;
+    close: () => void;
+    reject: (err: Error) => void;
+  }>();
 
-  constructor() {
+  constructor(options: BridgeClientOptions = {}) {
+    this.autoRestart = options.autoRestart ?? false;
+    this.maxRestarts = options.maxRestarts ?? 3;
     this.ready = new Promise<void>((res, rej) => {
       this.resolveReady = res;
       this.rejectReady = rej;
     });
+  }
+
+  /**
+   * Set the W3C traceparent value to be included in every outgoing request.
+   * Pass undefined to clear it.
+   */
+  setTraceparent(t: string | undefined): void {
+    this.traceparent = t;
   }
 
   /**
@@ -158,6 +185,7 @@ export abstract class BridgeClientBase {
 
     const id = randomUUID();
     const request: RpcRequest = { id, method, params };
+    if (this.traceparent) request.traceparent = this.traceparent;
 
     return new Promise<T>((resolve, reject) => {
       this.pending.set(id, {
@@ -166,6 +194,62 @@ export abstract class BridgeClientBase {
       });
       this._writeRequest(request, id, reject);
     });
+  }
+
+  /**
+   * Send a streaming JSON-RPC call to the child. The child should emit
+   * `{ id, chunk: {...} }` frames followed by a terminal `{ id, result }` or
+   * `{ id, error }` frame.
+   */
+  async *stream<T extends Record<string, unknown> = Record<string, unknown>>(
+    method: string,
+    params: Record<string, unknown> = {},
+  ): AsyncGenerator<T> {
+    if (this.dead) {
+      throw new Error("Bridge is not running");
+    }
+    const id = randomUUID();
+    const request: RpcRequest & { stream: boolean } = { id, method, params, stream: true };
+    if (this.traceparent) request.traceparent = this.traceparent;
+
+    // Simple buffer + promise chain for chunks
+    const buffer: T[] = [];
+    let done = false;
+    let error: Error | undefined;
+    let notify: (() => void) | undefined;
+
+    this.streamPending.set(id, {
+      push: (chunk) => {
+        buffer.push(chunk as T);
+        notify?.();
+      },
+      close: () => {
+        done = true;
+        notify?.();
+      },
+      reject: (err) => {
+        error = err;
+        done = true;
+        notify?.();
+      },
+    });
+
+    this._writeRequest(request as unknown as RpcRequest, id, (err) => {
+      this.streamPending.delete(id);
+      error = err;
+      done = true;
+      notify?.();
+    });
+
+    while (!done || buffer.length > 0) {
+      if (buffer.length > 0) {
+        yield buffer.shift()!;
+      } else if (!done) {
+        await new Promise<void>((resolve) => { notify = resolve; });
+        notify = undefined;
+      }
+    }
+    if (error) throw error;
   }
 
   /** Concrete subclasses implement this to write a serialised request. */
@@ -177,6 +261,27 @@ export abstract class BridgeClientBase {
 
   /** Must be implemented by concrete class to clean up the child process. */
   abstract destroy(): void;
+
+  /**
+   * Ping the child process. Returns { pong: true, pid: <child pid> }.
+   * Useful as a health-check before the first real call.
+   */
+  async ping(): Promise<{ pong: boolean; pid: number }> {
+    return this.call<{ pong: boolean; pid: number }>("__ping__", {});
+  }
+
+  /**
+   * Called when the child process exits unexpectedly.
+   * The default implementation rejects all pending calls and stream consumers.
+   * Subclasses can override to implement restart logic.
+   */
+  protected _onChildExit(code: number | null, signal: string | null): void {
+    const err = new Error(`Bridge child exited (code=${code}, signal=${signal})`);
+    this._rejectAll(err);
+    for (const sp of this.streamPending.values()) sp.reject(err);
+    this.streamPending.clear();
+    this.dead = true;
+  }
 
   // ── Private helpers ─────────────────────────────────────────────────────────
 
@@ -190,6 +295,25 @@ export abstract class BridgeClientBase {
 
     if ((msg as { ready?: boolean }).ready === true) {
       this.resolveReady();
+      return;
+    }
+
+    // Check for streaming chunk frame
+    if ("chunk" in (msg as Record<string, unknown>)) {
+      const sp = this.streamPending.get((msg as Record<string, unknown>).id as string);
+      if (sp) sp.push((msg as Record<string, unknown>).chunk as Record<string, unknown>);
+      return;
+    }
+
+    // Check if this is a terminal result for a stream
+    const sterm = this.streamPending.get(msg.id);
+    if (sterm) {
+      this.streamPending.delete(msg.id);
+      if ("error" in msg && msg.error) {
+        sterm.reject(new Error(msg.error.message));
+      } else {
+        sterm.close();
+      }
       return;
     }
 
